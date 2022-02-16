@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "368657563354",
+    "project_id": "conference-chat-750fa",
+    "storage_bucket": "conference-chat-750fa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368657563354:android:6d584620096a4be7b76fe3",
+        "android_client_info": {
+          "package_name": "com.example.chatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "368657563354-f0t1ilr8pt0799emqenbcg7th6fgg1i5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCr93Z4rBr8ElMkm9rTGpgh6xBXyxYFG1g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "368657563354-f0t1ilr8pt0799emqenbcg7th6fgg1i5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
