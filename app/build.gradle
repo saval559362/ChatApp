@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 apply plugin: 'com.google.gms.google-services'  // Google Services plugin
+apply plugin: 'com.google.firebase.appdistribution'
 
 android {
     compileSdk 32
@@ -67,4 +68,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-database'
+    implementation 'com.firebase:firebase-client-android:2.5.2'
+    implementation 'com.firebaseui:firebase-ui-database:8.0.0'
 }
+
+
+

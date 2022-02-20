@@ -5,11 +5,12 @@
       <map>
         <entry key="..\:/Users/valer/AndroidStudioProjects/ChatApp/app/src/main/res/layout/activity_login.xml" value="0.2109375" />
         <entry key="..\:/Users/valer/AndroidStudioProjects/ChatApp/app/src/main/res/layout/activity_main.xml" value="0.24547101449275363" />
-        <entry key="..\:/Users/valer/AndroidStudioProjects/ChatApp/app/src/main/res/layout/activity_main_chat_view.xml" value="0.2109375" />
+        <entry key="..\:/Users/valer/AndroidStudioProjects/ChatApp/app/src/main/res/layout/activity_main_chat_view.xml" value="0.2" />
         <entry key="..\:/Users/valer/AndroidStudioProjects/ChatApp/app/src/main/res/layout/activity_registration.xml" value="0.2109375" />
         <entry key="..\:/Users/valer/AndroidStudioProjects/ChatApp/app/src/main/res/layout/content_scrolling.xml" value="0.11614583333333334" />
         <entry key="..\:/Users/valer/AndroidStudioProjects/ChatApp/app/src/main/res/layout/fragment_chat_view.xml" value="0.11614583333333334" />
         <entry key="..\:/Users/valer/AndroidStudioProjects/ChatApp/app/src/main/res/layout/fragment_registration.xml" value="0.2109375" />
+        <entry key="..\:/Users/valer/AndroidStudioProjects/ChatApp/app/src/main/res/layout/message_layout.xml" value="0.176" />
         <entry key="..\:/Users/valer/AndroidStudioProjects/ChatApp/app/src/main/res/menu/menu_chat_view.xml" value="0.259375" />
       </map>
     </option>
