@@ -11,9 +11,9 @@
         android:layout_height="wrap_content"
         android:background="@color/purple_700"/>
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listMessages"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_below="@id/chatToolbar"
