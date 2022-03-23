@@ -11,11 +11,19 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 
@@ -27,7 +35,10 @@ public class LoginActivity extends AppCompatActivity {
     private EditText userPass;
     private FirebaseAuth mAuth;
 
+    private DatabaseReference chtRef = FirebaseDatabase.getInstance().getReference("Chats");
+
     private static final String TAG = "EmailPassword";
+    private FirebaseFirestore usersColl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
+        usersColl = FirebaseFirestore.getInstance();
 
         singIn = findViewById(R.id.sign_in_butt);
         singUp = findViewById(R.id.sign_up_butt);
@@ -79,10 +91,12 @@ public class LoginActivity extends AppCompatActivity {
         Intent i = getIntent();
         String usEmail = i.getStringExtra("USER_EMAIL");
         String usPass = i.getStringExtra("USER_PASS");
+        String usNick = i.getStringExtra("USER_NICK");
+        String usPhone = i.getStringExtra("USER_NUMBER");
         if (usEmail == null && usPass == null){
 
         } else {
-            signUp(usEmail, usPass);
+            signUp(usEmail, usPass, usNick, usPhone);
             Toast.makeText(this, "Registration complete", Toast.LENGTH_SHORT).show();
         }
 
@@ -112,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
     //TODO выводить ошибки неверного формата пароли и почты    task.getException()).toString
-    private void signUp(String email, String password) {
+    private void signUp(String email, String password, String nickName, String number) {
         // [START create_user_with_email]
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -125,6 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Registration complete",
                                     Toast.LENGTH_SHORT).show();
                             //updateUI(user);
+                            setFirestoreUser(Objects.requireNonNull(user), nickName, number);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -135,6 +150,29 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
         // [END create_user_with_email]
+    }
+
+    private void setFirestoreUser(FirebaseUser user, String nickName, String phNumber){
+        HashMap<String, Object> us = new HashMap<>();
+        us.put("email", user.getEmail());
+        us.put("login",nickName);
+        us.put("number", phNumber);
+
+        usersColl.collection("users")
+                .document(user.getUid())
+                .set(us)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d("FirestoreExecute", "Execute complete!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("FirestoreExecute", "Execute failure: " + e.getMessage());
+                    }
+                });
     }
 
     private void updateUi(FirebaseUser user)

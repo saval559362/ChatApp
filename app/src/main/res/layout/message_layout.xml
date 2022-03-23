@@ -2,7 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="10dp"
     android:layout_marginBottom="8dp"
@@ -11,13 +11,15 @@
     android:layout_marginRight="16dp"
     android:layout_marginStart="16dp"
     android:layout_marginTop="8dp"
-    android:background="@color/cardview_dark_background">
+    app:cardBackgroundColor="@color/teal_200"
+    android:id="@+id/messageCard">
 
     <LinearLayout
         android:id="@+id/lineRoot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/userName"
