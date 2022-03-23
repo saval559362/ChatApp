@@ -1,8 +1,11 @@
 package com.example.chatapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
@@ -22,6 +25,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     private Button _nextButt;
@@ -29,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbarMain;
     private TabLayout tabLayout;
     private ViewPager2 vPager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

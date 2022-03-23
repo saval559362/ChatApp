@@ -43,6 +43,11 @@ public class ChatsViewFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats_view, container, false);
 
+        chatsListRecycler = view.findViewById(R.id.chatsListRec);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        chatsListRecycler.setLayoutManager(linearLayoutManager);
+        chatsListRecycler.setHasFixedSize(true);
         //Чтение всех чатов с Firebase
         //TODO не считывает чаты
         /*FirebaseRecyclerOptions<ChatRoot> options =
@@ -90,18 +95,11 @@ public class ChatsViewFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
 
-        Log.d("---RECYCLER INIT---", "RECYCLER INIT BEGIN");
-        chatsListRecycler = view.findViewById(R.id.chatsListRec);
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        chatsListRecycler.setLayoutManager(linearLayoutManager);
-        chatsListRecycler.setHasFixedSize(true);
-
         chats = new ArrayList<>();
         msgAdapter = new MessageAdapter(getActivity(), chats);
         chatsListRecycler.setAdapter(msgAdapter);
 
-        List<String> partc = new ArrayList<>();
+        /*List<String> partc = new ArrayList<>();
         partc.add("Ddd");
         partc.add("Fff");
         List<Message> msgs = new ArrayList<>();
@@ -110,8 +108,8 @@ public class ChatsViewFragment extends Fragment {
 
         ChatModel chat = new ChatModel("String chatName", partc, msgs, "String lastMessage");
         chats.add(chat);
-        msgAdapter.notifyDataSetChanged();
-        //readChats();
+        msgAdapter.notifyDataSetChanged();*/
+        readChats();
 
     }
 

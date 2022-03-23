@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
@@ -32,7 +33,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ChatView
 
     @NonNull
     @Override
-    public MessageAdapter.ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MessageAdapter.ChatViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(cContext).inflate(R.layout.chats_view_layout, parent, false);
         return new ChatViewHolder(view);
     }
@@ -43,11 +44,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ChatView
 
         holder.setChatName(chat.getChatName());
         holder.setChatLastMsg(chat.getLastMessage());
+
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return chats.size();
     }
 
     public class ChatViewHolder extends RecyclerView.ViewHolder {
