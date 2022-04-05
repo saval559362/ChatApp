@@ -1,6 +1,4 @@
-package com.example.chatapp;
-
-import static android.content.ContentValues.TAG;
+package com.example.chatapp.services;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -17,6 +15,8 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import com.example.chatapp.R;
+import com.example.chatapp.activities.MainActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

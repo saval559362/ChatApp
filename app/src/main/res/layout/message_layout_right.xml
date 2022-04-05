@@ -11,8 +11,9 @@
     android:layout_marginRight="16dp"
     android:layout_marginStart="16dp"
     android:layout_marginTop="8dp"
-    app:cardBackgroundColor="@color/teal_200"
-    android:id="@+id/messageCard">
+    app:cardBackgroundColor="@color/light_blue_A400"
+    android:id="@+id/messageCard"
+    android:layout_gravity="right">
 
     <LinearLayout
         android:id="@+id/lineRoot"
@@ -20,7 +21,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="10dp"
-        android:gravity="left">
+        android:layout_gravity="bottom"
+        android:gravity="right">
 
         <TextView
             android:id="@+id/userName"

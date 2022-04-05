@@ -1,4 +1,4 @@
-package com.example.chatapp;
+package com.example.chatapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,7 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.lang.reflect.Method;
+import com.example.chatapp.R;
+import com.example.chatapp.activities.LoginActivity;
 
 public class RegistrationActivity extends AppCompatActivity {
     private EditText usEmail;

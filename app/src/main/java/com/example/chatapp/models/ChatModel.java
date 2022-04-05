@@ -1,19 +1,18 @@
-package com.example.chatapp;
+package com.example.chatapp.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.firebase.database.DatabaseReference;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ChatModel {
 
     public String ChatName;
     public String LastMessage;
-    public List<Message> Messages;
+    public DatabaseReference Messages;
     public List<String> Participants;
 
 
-    public ChatModel(String chatName, List<String> participants, List<Message> messages, String lastMessage) {
+    public ChatModel(String chatName, List<String> participants, DatabaseReference messages, String lastMessage) {
         ChatName = chatName;
         Participants = participants;
         Messages = messages;
@@ -32,7 +31,7 @@ public class ChatModel {
         return Participants;
     }
 
-    public List<Message> getMessages() {
+    public DatabaseReference getMessages() {
         return Messages;
     }
 
