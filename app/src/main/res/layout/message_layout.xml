@@ -27,9 +27,9 @@
         android:text="Rose"/>
 
     <TextView
+        android:id="@+id/userMessageText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/userMessageText"
         android:layout_below="@+id/userName"
         android:layout_alignStart="@+id/userName"
         android:background="@drawable/their_message"

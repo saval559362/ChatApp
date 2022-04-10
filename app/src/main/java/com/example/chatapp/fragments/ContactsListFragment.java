@@ -15,9 +15,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.chatapp.R;
+import com.example.chatapp.activities.MainActivity;
 import com.example.chatapp.activities.MainChatView;
 import com.example.chatapp.adapters.UserAdapter;
 import com.example.chatapp.models.ChatModel;
+import com.example.chatapp.models.ParticipiantsInfo;
 import com.example.chatapp.models.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -47,6 +49,7 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
     private String currUsUid;
 
     private FirebaseFirestore dbUsers;
+    private List<ParticipiantsInfo> participiantsInfoList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,7 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
         dbUsers = FirebaseFirestore.getInstance();
         chtRef = FirebaseDatabase.getInstance().getReference("Chats");
         currUsUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        participiantsInfoList = new ArrayList<>();
 
         return view;
     }
@@ -78,6 +82,26 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
         usersListRec.setAdapter(usAdapter);
 
         readUsers();
+        readParticipiants();
+    }
+
+    public void readParticipiants() {
+        chtRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<String> parts = new ArrayList<>();
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+
+                    for (DataSnapshot usUid : data.child("participiants").getChildren()) {
+                        parts.add(usUid.getValue(String.class));
+                    }
+                    participiantsInfoList.add(new ParticipiantsInfo(parts, data.getRef().toString()));
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     public void readUsers(){
@@ -102,32 +126,37 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
     }
     private boolean userCurr = false;
     private boolean userSel = false;
-    private String ref;
+
     @Override
     public void onUserClick(int position) {
         User currUser = users.get(position);
-        List<String> partic = new ArrayList<>();
-        chtRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
+        String ref = "";
 
+        for (ParticipiantsInfo part : participiantsInfoList) {
+            for (String us : part.Uids) {
+                if (currUser.Uid.equals(us)) {
+                    userSel = true;
+                }
 
+                if (currUsUid.equals(us)) {
+                    userCurr = true;
+                }
 
-
+                if (userCurr && userSel) {
+                    ref = part.DatabaseRef;
+                    break;
                 }
             }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+        }
 
-        /*if (userCurr && userSel) {
+        if (userCurr && userSel) {
             Intent intent = new Intent(getContext(), MainChatView.class);
 
+            ref += "/messages";
             intent.putExtra("msgRef", ref);
             intent.putExtra("receiver", currUser.Uid);
             startActivity(intent);
+            //Log.d("USERCLICK", "Two booleans is true!");
 
         } else {
             String chRef = UUID.randomUUID().toString().replace('-','f');
@@ -136,6 +165,11 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
             chtRef.child(chRef).child("lastMessage").setValue("");
             List<String> parts = Arrays.asList(currUsUid, currUser.Uid);
             chtRef.child(chRef).child("paricipiants").setValue(parts);
-        }*/
+            //Log.d("USERCLICK", "Body else is work!");
+        }
+
+        userSel = false;
+        userCurr = false;
+
     }
 }

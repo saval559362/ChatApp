@@ -10,8 +10,8 @@
     android:clipToPadding="false">
 
     <TextView
-        android:visibility="invisible"
         android:id="@+id/userName"
+        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Email@example.com"
@@ -20,9 +20,9 @@
         android:textColor="@color/cardview_dark_background"/>
 
     <TextView
+        android:id="@+id/userMessageText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/userMessageText"
         android:background="@drawable/my_message"
         android:textColor="#fff"
         android:padding="10dp"
