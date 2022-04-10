@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:layout_marginBottom="8dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    app:cardBackgroundColor="@color/teal_200"
+    android:id="@+id/messageCard">
+
+    <LinearLayout
         android:id="@+id/lineRoot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -8,36 +22,29 @@
         android:padding="10dp"
         android:gravity="left">
 
-        <View
-            android:id="@+id/avatar"
-            android:layout_alignParentStart="true"
-            android:scaleType="centerInside"
-            android:background="@drawable/circle"
-            android:layout_width="34dp"
-            android:layout_height="34dp" />
-
         <TextView
             android:id="@+id/userName"
-            android:layout_marginStart="15dp"
-            android:layout_toEndOf="@+id/avatar"
-            android:layout_alignTop="@+id/avatar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="4dp"
-            android:text="Rose"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="Email@example.com"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/cardview_dark_background"/>
 
         <TextView
+            android:id="@+id/userMessageText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/userMessageText"
-            android:layout_below="@+id/userName"
-            android:layout_alignStart="@+id/userName"
-            android:background="@drawable/their_message"
-            android:paddingVertical="12dp"
-            android:paddingHorizontal="16dp"
-            android:elevation="2dp"
-            android:textSize="18sp"
-            android:text="How are you doing? This is a long message that should probably wrap."
-            />
+            android:layout_margin="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="Message text"
+            android:textSize="24sp"
+            android:textColor="@color/black"/>
 
-    </RelativeLayout>
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>
