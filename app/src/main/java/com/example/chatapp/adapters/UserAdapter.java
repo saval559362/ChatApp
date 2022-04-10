@@ -19,17 +19,19 @@ import java.util.List;
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder>{
 
     private List<User> usersList;
-    private Context mContext;
-    public UserAdapter(Context cContext,List<User> us) {
-        mContext = cContext;
+    private OnUserListener mOnUserListener;
+
+    public UserAdapter(List<User> us, OnUserListener onUserListener) {
         usersList = us;
+
+        this.mOnUserListener = onUserListener;
     }
 
     @NonNull
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.user_card_view, parent, false);
-        return new UserViewHolder(view);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_card_view, parent, false);
+        return new UserViewHolder(view, mOnUserListener);
     }
 
     @Override
@@ -44,20 +46,40 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     }
 
     public class UserViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener, View.OnLongClickListener
     {
         private LinearLayout root;
         private ImageView userImg;
         private TextView userNm;
-        public UserViewHolder(@NonNull View itemView) {
+        private OnUserListener onUserListener;
+
+        public UserViewHolder(@NonNull View itemView, OnUserListener onUserListener) {
             super(itemView);
 
             root = itemView.findViewById(R.id.userRoot);
             userImg = itemView.findViewById(R.id.userImage);
             userNm = itemView.findViewById(R.id.userName);
+            this.onUserListener = onUserListener;
+            itemView.setOnClickListener(this);
         }
 
         public void bindUser(User us){
             userNm.setText(us.Name);
         }
+
+        @Override
+        public void onClick(View view) {
+            onUserListener.onUserClick(getAbsoluteAdapterPosition());
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            return false;
+        }
+
+    }
+
+    public interface OnUserListener {
+        void onUserClick(int position);
     }
 }

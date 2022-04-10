@@ -67,6 +67,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             chatImage = itemView.findViewById(R.id.chatImage);
             chatName = itemView.findViewById(R.id.chatName);
             chatLastMsg = itemView.findViewById(R.id.lastChatMessageText);
+
             this.onChatListener = onChatListener;
             itemView.setOnClickListener(this);
         }

@@ -12,8 +12,8 @@ public class ChatModel {
     public List<String> Participants;
 
 
-    public ChatModel(String chatName, List<String> participants, DatabaseReference messages, String lastMessage) {
-        ChatName = chatName;
+    public ChatModel(String mchatName, List<String> participants, DatabaseReference messages, String lastMessage) {
+        ChatName = mchatName;
         Participants = participants;
         Messages = messages;
         LastMessage = lastMessage;

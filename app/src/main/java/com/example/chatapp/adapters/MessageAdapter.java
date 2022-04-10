@@ -26,7 +26,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     public MessageAdapter(List<Message> messageList){
         msgs = messageList;
-
         fUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
