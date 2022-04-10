@@ -57,6 +57,7 @@ public class MainChatView extends AppCompatActivity {
 
         String ref = getIntent().getExtras().getString("msgRef");
         String reciever = getIntent().getExtras().getString("receiver");
+
         msgRef = FirebaseDatabase.getInstance().getReferenceFromUrl(ref);
 
         messagesList = new ArrayList<>();
