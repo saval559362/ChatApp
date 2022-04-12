@@ -86,7 +86,7 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
                     msgRef = childSnap.child("messages").getRef();
 
                     for (DataSnapshot part : childSnap.child("participiants").getChildren()){
-                        partc.add(part.getValue(String.class));
+                        partc.add(part.getValue(String.class));                             //TODO скорее всего также неверно получает
                     }
                     chats.add(new ChatModel(chName, partc, msgRef, lsMsg));
                     msgAdapter.notifyDataSetChanged();
@@ -118,5 +118,7 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
         intent.putExtra("msgRef", currentChat.Messages.toString());
         intent.putExtra("receiver", reciever);
         startActivity(intent);
+
+        Log.d("FROM FRAGMENT",currentChat.Messages.toString());
     }
 }

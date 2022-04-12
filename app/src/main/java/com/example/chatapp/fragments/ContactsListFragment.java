@@ -35,6 +35,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -86,17 +87,21 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
     }
 
     public void readParticipiants() {
+        List<String> parts = new ArrayList<>();
         chtRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<String> parts = new ArrayList<>();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
 
-                    for (DataSnapshot usUid : data.child("participiants").getChildren()) {
+                    for (DataSnapshot usUid : data.child("paricipiants").getChildren()) {
                         parts.add(usUid.getValue(String.class));
                     }
-                    participiantsInfoList.add(new ParticipiantsInfo(parts, data.getRef().toString()));
+
+                    List<String> tempPart = new ArrayList<>(parts);
+                    participiantsInfoList.add(new ParticipiantsInfo(tempPart, data.getRef().toString()));
+                    parts.clear();
                 }
+
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -124,39 +129,32 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-    private boolean userCurr = false;
-    private boolean userSel = false;
+    private boolean usersExist = false;
 
     @Override
     public void onUserClick(int position) {
         User currUser = users.get(position);
         String ref = "";
 
+        List<String> ls = participiantsInfoList.get(position).Uids;
+
         for (ParticipiantsInfo part : participiantsInfoList) {
-            for (String us : part.Uids) {
-                if (currUser.Uid.equals(us)) {
-                    userSel = true;
-                }
 
-                if (currUsUid.equals(us)) {
-                    userCurr = true;
-                }
-
-                if (userCurr && userSel) {
-                    ref = part.DatabaseRef;
-                    break;
-                }
+            if (part.Uids.containsAll(Arrays.asList(currUsUid, currUser.Uid))) {
+                usersExist = true;
+                ref = part.DatabaseRef;
+                break;
             }
         }
 
-        if (userCurr && userSel) {
-            Intent intent = new Intent(getContext(), MainChatView.class);
+        Intent intent = new Intent(getContext(), MainChatView.class);
 
+        if (usersExist) {
             ref += "/messages";
             intent.putExtra("msgRef", ref);
             intent.putExtra("receiver", currUser.Uid);
             startActivity(intent);
-            //Log.d("USERCLICK", "Two booleans is true!");
+            Log.d("USERCLICK", "Chat exist " + ref);
 
         } else {
             String chRef = UUID.randomUUID().toString().replace('-','f');
@@ -165,11 +163,17 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
             chtRef.child(chRef).child("lastMessage").setValue("");
             List<String> parts = Arrays.asList(currUsUid, currUser.Uid);
             chtRef.child(chRef).child("paricipiants").setValue(parts);
-            //Log.d("USERCLICK", "Body else is work!");
+
+            ref += chtRef.child(chRef) + "/messages";
+
+            intent.putExtra("msgRef", ref);
+            intent.putExtra("receiver", currUser.Uid);
+            startActivity(intent);
+            Log.d("USERCLICK", "Chat don't exist");
         }
 
-        userSel = false;
-        userCurr = false;
+        usersExist = false;
+        ref = "";
 
     }
 }

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.chatapp.fragments.ChatsViewFragment;
 import com.example.chatapp.fragments.ContactsListFragment;
@@ -17,6 +18,7 @@ import com.example.chatapp.R;
 import com.example.chatapp.adapters.ViewPageAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbarMain;
     private TabLayout tabLayout;
     private ViewPager2 vPager;
+    private TextView toolbarText;
 
 
     @Override
@@ -38,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout = findViewById(R.id.tabs);
         vPager = findViewById(R.id.pager);
+
+        toolbarText = findViewById(R.id.toolbarTextview);
 
         //tabLayout.setupWithViewPager(vPager);
         ViewPageAdapter adapter = new ViewPageAdapter(getSupportFragmentManager(), getLifecycle());
@@ -71,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setSupportActionBar(toolbarMain);
+        toolbarText.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
     }
 

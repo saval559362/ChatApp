@@ -25,6 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -82,7 +84,8 @@ public class MainChatView extends AppCompatActivity {
                 public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                     messagesList.add(new Message(snapshot.child("sender").getValue(String.class),
                             snapshot.child("receiver").getValue(String.class),
-                            snapshot.child("messageText").getValue(String.class)));
+                            snapshot.child("messageText").getValue(String.class)));             //TODO разворачивать лист
+
                     msgAdapter.notifyDataSetChanged();
                     messages.scrollToPosition(messagesList.size() - 1);
                     messageText.setText("");
@@ -108,6 +111,7 @@ public class MainChatView extends AppCompatActivity {
 
                 }
             });
+
     }
 }
 
