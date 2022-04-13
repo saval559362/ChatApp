@@ -21,7 +21,16 @@ public class Message implements Parcelable {
         MessageTime = new Date().getTime();
     }
 
+    public Message(String sender, String receiver, String textMessage, long msgTime) {
+        Sender = sender;
+        Receiver = receiver;
+        MessageText = textMessage;
+
+        MessageTime = msgTime;
+    }
+
     public Message() {
+
     }
 
     protected Message(Parcel in) {

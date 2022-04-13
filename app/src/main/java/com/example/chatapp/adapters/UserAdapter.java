@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.content.Context;
 
@@ -48,7 +49,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public class UserViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener
     {
-        private LinearLayout root;
+        private RelativeLayout root;
         private ImageView userImg;
         private TextView userNm;
         private OnUserListener onUserListener;

@@ -27,7 +27,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -68,24 +71,33 @@ public class MainChatView extends AppCompatActivity {
 
         readMessages();
 
+
+
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Message msg = new Message(sender, reciever, messageText.getText().toString());
                 msgRef.child(UUID.randomUUID().toString().replace('-','f')).setValue(msg);
 
+                String ref = msgRef.getRef().toString().replace("/messages", "");
+                DatabaseReference mRef = FirebaseDatabase.getInstance().getReferenceFromUrl(ref);
+                mRef.child("lastMessage").setValue(messageText.getText().toString());
+
             }
         });
     }
 
     private void readMessages(){
-            msgRef.addChildEventListener(new ChildEventListener() {
+        msgRef.addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
                     messagesList.add(new Message(snapshot.child("sender").getValue(String.class),
                             snapshot.child("receiver").getValue(String.class),
-                            snapshot.child("messageText").getValue(String.class)));             //TODO разворачивать лист
+                            snapshot.child("messageText").getValue(String.class),
+                            snapshot.child("messageTime").getValue(Long.class)));             //TODO сортировать лист
 
+                    messagesList.sort(Comparator.comparingLong(Message::getMessageTime));
                     msgAdapter.notifyDataSetChanged();
                     messages.scrollToPosition(messagesList.size() - 1);
                     messageText.setText("");
@@ -111,7 +123,6 @@ public class MainChatView extends AppCompatActivity {
 
                 }
             });
-
     }
 }
 

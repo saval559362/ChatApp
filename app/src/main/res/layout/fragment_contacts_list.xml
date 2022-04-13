@@ -6,8 +6,7 @@
     tools:context=".fragments.ContactsListFragment">
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Contacts"/>
+        android:layout_height="match_parent"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/contactsList"
         android:layout_width="match_parent"
