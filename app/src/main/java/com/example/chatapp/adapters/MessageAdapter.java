@@ -15,6 +15,7 @@ import com.example.chatapp.R;
 import com.example.chatapp.models.Message;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 

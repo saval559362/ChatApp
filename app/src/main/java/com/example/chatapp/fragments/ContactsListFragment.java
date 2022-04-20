@@ -1,5 +1,6 @@
 package com.example.chatapp.fragments;
 
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -120,7 +121,9 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
                         String email = d.get("email", String.class);
                         String number = d.get("number", String.class);
 
-                        users.add(new User(uid, login, number, email));
+                        if (!uid.equals(currUsUid)) {
+                            users.add(new User(uid, login, number, email));
+                        }
                     }
 
                     usAdapter.notifyDataSetChanged();
@@ -136,8 +139,6 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
         User currUser = users.get(position);
         String ref = "";
 
-        List<String> ls = participiantsInfoList.get(position).Uids;
-
         for (ParticipiantsInfo part : participiantsInfoList) {
 
             if (part.Uids.containsAll(Arrays.asList(currUsUid, currUser.Uid))) {
@@ -146,6 +147,7 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
                 break;
             }
         }
+
 
         Intent intent = new Intent(getContext(), MainChatView.class);
 

@@ -39,9 +39,8 @@ public class MainChatView extends AppCompatActivity {
     private RecyclerView messages;
     private EditText messageText;
 
-
     private LinearLayoutManager linearLayoutManager;
-    private List<User> partc;
+
     private DatabaseReference msgRef;
     private List<Message> messagesList;
     private String sender = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -71,8 +70,7 @@ public class MainChatView extends AppCompatActivity {
 
         readMessages();
 
-
-
+        //Listener на кнопку для отправки сообщений
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,6 +85,7 @@ public class MainChatView extends AppCompatActivity {
         });
     }
 
+    //EventListener для считывания сообщений
     private void readMessages(){
         msgRef.addChildEventListener(new ChildEventListener() {
                 @Override
@@ -95,7 +94,7 @@ public class MainChatView extends AppCompatActivity {
                     messagesList.add(new Message(snapshot.child("sender").getValue(String.class),
                             snapshot.child("receiver").getValue(String.class),
                             snapshot.child("messageText").getValue(String.class),
-                            snapshot.child("messageTime").getValue(Long.class)));             //TODO сортировать лист
+                            snapshot.child("messageTime").getValue(Long.class)));
 
                     messagesList.sort(Comparator.comparingLong(Message::getMessageTime));
                     msgAdapter.notifyDataSetChanged();

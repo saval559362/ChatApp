@@ -3,11 +3,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ProfileFragment">
+    tools:context=".fragments.ProfileFragment"
+    android:animateLayoutChanges="true">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/profileAvatar"
+            android:scaleType="centerInside"
+            android:background="@drawable/circle"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"/>
+
+        <TextView
+            android:id="@+id/profileName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profileAvatar"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:textSize="20sp"
+            android:text="TestName" />
+        <TextView
+            android:id="@+id/profileEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profileName"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:text="TestEmail@example.com" />
+    </RelativeLayout>
 
 </FrameLayout>

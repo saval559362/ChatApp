@@ -21,6 +21,7 @@ import com.example.chatapp.adapters.ChatAdapter;
 import com.example.chatapp.models.ChatModel;
 import com.example.chatapp.models.Message;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,6 +38,7 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
     private String TAG = "ChatsViewFragmentTag";
     private ChatAdapter msgAdapter;
     private List<ChatModel> chats;
+    private String currUser;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,8 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
         chatsListRecycler.setLayoutManager(linearLayoutManager);
         chatsListRecycler.setHasFixedSize(true);
 
+        currUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         return view;
     }
 
@@ -70,7 +74,7 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
 
     public void readChats(){
 
-        ValueEventListener listener = new ValueEventListener() {
+        chtRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -88,7 +92,11 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
                     for (DataSnapshot part : childSnap.child("participiants").getChildren()){
                         partc.add(part.getValue(String.class));                             //TODO скорее всего также неверно получает
                     }
-                    chats.add(new ChatModel(chName, partc, msgRef, lsMsg));
+
+                    if (partc.contains(currUser)) {
+                        chats.add(new ChatModel(chName, partc, msgRef, lsMsg));
+                    }
+
                     msgAdapter.notifyDataSetChanged();
                 }
 
@@ -98,8 +106,8 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d("-----ERROR-----", error.getMessage());
             }
-        };
-        chtRef.addValueEventListener(listener);
+        });
+
     }
 
     @Override
@@ -119,6 +127,5 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
         intent.putExtra("receiver", reciever);
         startActivity(intent);
 
-        Log.d("FROM FRAGMENT",currentChat.Messages.toString());
     }
 }
