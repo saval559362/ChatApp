@@ -46,6 +46,8 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
 
     private RelativeLayout loadingSpinner;
 
+    private ValueEventListener chtRefListener;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +85,7 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
 
     public void readChats(){
 
-        chtRef.addValueEventListener(new ValueEventListener() {
+        chtRefListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -121,8 +123,9 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d("-----ERROR-----", error.getMessage());
             }
-        });
+        };
 
+        chtRef.addValueEventListener(chtRefListener);
     }
 
     @Override
@@ -142,5 +145,11 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
         intent.putExtra("receiver", reciever);
         startActivity(intent);
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        chtRef.removeEventListener(chtRefListener);
     }
 }

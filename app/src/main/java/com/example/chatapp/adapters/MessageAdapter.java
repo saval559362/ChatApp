@@ -51,11 +51,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public int getItemViewType(int position) {
-        if (msgs.get(position).getSender().equals(fUser.getUid())){
+        if (msgs.get(position).getSender().equals(fUser.getUid())){           //TODO какого то хуя начал выбивать ошибку
             return MSG_TYPE_RIGHT;
         } else {
             return MSG_TYPE_LEFT;
         }
+        //return MSG_TYPE_LEFT;
     }
 
     @Override

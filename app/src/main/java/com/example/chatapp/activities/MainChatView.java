@@ -45,7 +45,7 @@ public class MainChatView extends AppCompatActivity {
 
     private DatabaseReference msgRef;
     private List<Message> messagesList;
-    private String sender = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private String currUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private MessageAdapter msgAdapter;
 
     @Override
@@ -77,14 +77,16 @@ public class MainChatView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 long time = new Date().getTime();
-                Message msg = new Message(sender, reciever, messageText.getText().toString(), time);
-                msgRef.child(UUID.randomUUID().toString().replace('-','f')).setValue(msg);
+                Message msg = new Message(currUser, reciever, messageText.getText().toString(),
+                        time, false);
+
 
                 String ref = msgRef.getRef().toString().replace("/messages", "");
                 DatabaseReference mRef = FirebaseDatabase.getInstance().getReferenceFromUrl(ref);
                 mRef.child("lastMessage").setValue(messageText.getText().toString());
                 mRef.child("lastMessageTime").setValue(time);
 
+                msgRef.child(UUID.randomUUID().toString().replace('-','f')).setValue(msg);
             }
         });
     }
@@ -98,12 +100,17 @@ public class MainChatView extends AppCompatActivity {
                     messagesList.add(new Message(snapshot.child("sender").getValue(String.class),
                             snapshot.child("receiver").getValue(String.class),
                             snapshot.child("messageText").getValue(String.class),
-                            snapshot.child("messageTime").getValue(Long.class)));
+                            snapshot.child("messageTime").getValue(Long.class),
+                            snapshot.child("isseen").getValue(boolean.class)));
 
                     messagesList.sort(Comparator.comparingLong(Message::getMessageTime));
                     msgAdapter.notifyDataSetChanged();
                     messages.scrollToPosition(messagesList.size() - 1);
                     messageText.setText("");
+
+                    if (messagesList.get(messagesList.size() - 1).getReceiver().equals(currUser)) {
+                        snapshot.getRef().child("isseen").setValue(true);
+                    }
                 }
 
                 @Override
@@ -127,5 +134,6 @@ public class MainChatView extends AppCompatActivity {
                 }
             });
     }
+    
 }
 

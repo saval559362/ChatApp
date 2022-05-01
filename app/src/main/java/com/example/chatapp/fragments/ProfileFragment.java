@@ -36,7 +36,7 @@ public class ProfileFragment extends Fragment {
     private TextView profName;
     private TextView profEmail;
     private ImageView avatar;
-
+                                //TODO нет фото - ошибка
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

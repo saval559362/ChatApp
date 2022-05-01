@@ -1,48 +1,24 @@
 package com.example.chatapp.models;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import java.io.Serializable;
-import java.util.Date;
-
-public class Message implements Parcelable {
+public class Message {
 
     private String Sender;
     private String Receiver;
     private String MessageText;
     private long MessageTime;
+    private boolean Isseen;
 
-    public Message(String sender, String receiver, String textMessage, long msgTime) {
+    public Message(String sender, String receiver, String textMessage, long msgTime, boolean isseen) {
         Sender = sender;
         Receiver = receiver;
         MessageText = textMessage;
-
         MessageTime = msgTime;
+        Isseen = isseen;
     }
 
     public Message() {
 
     }
-
-    protected Message(Parcel in) {
-        Sender = in.readString();
-        Receiver = in.readString();
-        MessageText = in.readString();
-        MessageTime = in.readLong();
-    }
-
-    public static final Creator<Message> CREATOR = new Creator<Message>() {
-        @Override
-        public Message createFromParcel(Parcel in) {
-            return new Message(in);
-        }
-
-        @Override
-        public Message[] newArray(int size) {
-            return new Message[size];
-        }
-    };
 
     public String getSender() {
         return Sender;
@@ -60,17 +36,6 @@ public class Message implements Parcelable {
         return MessageTime;
     }
 
+    public boolean getIsseen() {return Isseen;}
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(Sender);
-        parcel.writeString(Receiver);
-        parcel.writeString(MessageText);
-        parcel.writeLong(MessageTime);
-    }
 }
