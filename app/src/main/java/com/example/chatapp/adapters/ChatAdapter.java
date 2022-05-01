@@ -16,7 +16,12 @@ import android.widget.TextView;
 
 import com.example.chatapp.models.ChatModel;
 import com.example.chatapp.R;
+import com.google.type.DateTime;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
@@ -40,8 +45,22 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     public void onBindViewHolder(@NonNull ChatAdapter.ChatViewHolder holder, int position) {
         ChatModel chat = chats.get(position);
 
+        long time = chat.getLastMessageTime();
+        Date messageDate = new Date(time);
+        Date todayDate = new Date(new Date().getTime());
+
+        SimpleDateFormat dateFormater = new SimpleDateFormat("dd MM yyyy");
+        SimpleDateFormat dateForCht;
+
+        if (dateFormater.format(messageDate).equals(dateFormater.format(todayDate))) {
+            dateForCht = new SimpleDateFormat("HH:mm");
+        } else {
+            dateForCht = new SimpleDateFormat("EEE, d MMM");
+        }
+
         holder.setChatName(chat.getChatName());
         holder.setChatLastMsg(chat.getLastMessage());
+        holder.setChatLastMsgTime(dateForCht.format(messageDate));
 
     }
 
@@ -58,6 +77,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         public ImageView chatImage;
         public TextView chatName;
         public TextView chatLastMsg;
+        public TextView chatLastMsgTime;
         OnChatListener onChatListener;
 
         public ChatViewHolder(View itemView, OnChatListener onChatListener){
@@ -68,6 +88,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             chatImage = itemView.findViewById(R.id.chatImage);
             chatName = itemView.findViewById(R.id.chatName);
             chatLastMsg = itemView.findViewById(R.id.lastChatMessageText);
+            chatLastMsgTime = itemView.findViewById(R.id.chatDateTime);
 
             this.onChatListener = onChatListener;
             itemView.setOnClickListener(this);
@@ -79,6 +100,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
         public void setChatLastMsg(String lastMsg){
             chatLastMsg.setText(lastMsg);
+        }
+
+        public void setChatLastMsgTime (String time) {
+            chatLastMsgTime.setText(time);
         }
 
         public void setChatImage(){

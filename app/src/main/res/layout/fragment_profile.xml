@@ -3,16 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ProfileFragment"
-    android:animateLayoutChanges="true">
+    tools:context=".fragments.ProfileFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <View
+        <ImageView
             android:id="@+id/profileAvatar"
-            android:scaleType="centerInside"
+            android:scaleType="fitXY"
             android:background="@drawable/circle"
             android:layout_width="150dp"
             android:layout_height="150dp"

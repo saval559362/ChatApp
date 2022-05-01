@@ -13,14 +13,6 @@ public class Message implements Parcelable {
     private String MessageText;
     private long MessageTime;
 
-    public Message(String sender, String receiver, String textMessage) {
-        Sender = sender;
-        Receiver = receiver;
-        MessageText = textMessage;
-
-        MessageTime = new Date().getTime();
-    }
-
     public Message(String sender, String receiver, String textMessage, long msgTime) {
         Sender = sender;
         Receiver = receiver;

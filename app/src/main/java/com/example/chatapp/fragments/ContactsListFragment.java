@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.chatapp.R;
@@ -47,11 +48,14 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
     private RecyclerView usersListRec;
     private UserAdapter usAdapter;
     private List<User> users;
+
     private DatabaseReference chtRef;
     private String currUsUid;
-
     private FirebaseFirestore dbUsers;
+
     private List<ParticipiantsInfo> participiantsInfoList;
+
+    private RelativeLayout spinner;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,12 +69,14 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
         View view = inflater.inflate(R.layout.fragment_contacts_list, container, false);
 
         usersListRec = view.findViewById(R.id.contactsList);
+        spinner = view.findViewById(R.id.loadingPanelContacts);
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         usersListRec.setLayoutManager(linearLayoutManager);
         usersListRec.setHasFixedSize(true);
         dbUsers = FirebaseFirestore.getInstance();
-        chtRef = FirebaseDatabase.getInstance().getReference("Chats");
-        currUsUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        chtRef = MainActivity.getFirebaseReference();
+        currUsUid = MainActivity.getFirebaseAuth().getCurrentUser().getUid();
         participiantsInfoList = new ArrayList<>();
 
         return view;
@@ -102,7 +108,7 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
                     participiantsInfoList.add(new ParticipiantsInfo(tempPart, data.getRef().toString()));
                     parts.clear();
                 }
-
+                spinner.setVisibility(View.GONE);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {

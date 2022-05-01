@@ -23,11 +23,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.type.DateTime;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,12 +76,14 @@ public class MainChatView extends AppCompatActivity {
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Message msg = new Message(sender, reciever, messageText.getText().toString());
+                long time = new Date().getTime();
+                Message msg = new Message(sender, reciever, messageText.getText().toString(), time);
                 msgRef.child(UUID.randomUUID().toString().replace('-','f')).setValue(msg);
 
                 String ref = msgRef.getRef().toString().replace("/messages", "");
                 DatabaseReference mRef = FirebaseDatabase.getInstance().getReferenceFromUrl(ref);
                 mRef.child("lastMessage").setValue(messageText.getText().toString());
+                mRef.child("lastMessageTime").setValue(time);
 
             }
         });

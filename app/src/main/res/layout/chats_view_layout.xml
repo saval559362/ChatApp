@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <RelativeLayout
     android:id="@+id/root"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -44,10 +42,11 @@
             android:textSize="10sp" />
     </LinearLayout>
 
-        <!--<TextView
+        <TextView
+            android:id="@+id/chatDateTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
-            android:text="10/10/2022" />-->
+            android:text="10/10/2022"
+            android:layout_alignParentEnd="true"/>
 </RelativeLayout>
 

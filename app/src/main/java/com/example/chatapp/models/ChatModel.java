@@ -9,13 +9,15 @@ public class ChatModel {
     public String ChatName;
     public String LastMessage;
     public DatabaseReference Messages;
+    private long LastMessageTime;
     public List<String> Participants;
 
 
-    public ChatModel(String mchatName, List<String> participants, DatabaseReference messages, String lastMessage) {
+    public ChatModel(String mchatName, List<String> participants, DatabaseReference messages, long lastMessageTime, String lastMessage) {
         ChatName = mchatName;
         Participants = participants;
         Messages = messages;
+        LastMessageTime = lastMessageTime;
         LastMessage = lastMessage;
     }
 
@@ -33,6 +35,10 @@ public class ChatModel {
 
     public DatabaseReference getMessages() {
         return Messages;
+    }
+
+    public long getLastMessageTime() {
+        return LastMessageTime;
     }
 
     public String getLastMessage() {
