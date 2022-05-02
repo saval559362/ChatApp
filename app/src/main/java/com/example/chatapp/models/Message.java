@@ -20,6 +20,26 @@ public class Message {
 
     }
 
+    public void setSender(String sender) {
+        Sender = sender;
+    }
+
+    public void setReceiver(String receiver) {
+        Receiver = receiver;
+    }
+
+    public void setMessageText(String messageText) {
+        MessageText = messageText;
+    }
+
+    public void setMessageTime(long messageTime) {
+        MessageTime = messageTime;
+    }
+
+    public void setIsseen(boolean isseen) {
+        Isseen = isseen;
+    }
+
     public String getSender() {
         return Sender;
     }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +25,7 @@ import com.example.chatapp.models.ChatModel;
 import com.example.chatapp.models.Message;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,12 +48,11 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
 
     private RelativeLayout loadingSpinner;
 
-    private ValueEventListener chtRefListener;
+    private ChildEventListener chtRefListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -69,6 +70,7 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
         currUser = Objects.requireNonNull(MainActivity.getFirebaseAuth().getCurrentUser()).getUid();                //FirebaseAuth.getInstance().getCurrentUser().getUid();
         chtRef = MainActivity.getFirebaseReference();
 
+        Log.d("----CHATSVIEWFRAGMENT----", "onCreateView done");
         return view;
     }
 
@@ -80,52 +82,74 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
         chatsListRecycler.setAdapter(msgAdapter);
 
         readChats();
-
+        Log.d("----CHATSVIEWFRAGMENT----", "onViewCreated done");
     }
 
     public void readChats(){
 
-        chtRefListener = new ValueEventListener() {
+        chtRefListener = new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                String chName = "";
-                String lsMsg = "";
-                DatabaseReference msgRef;
-                long lastMsgTime;
-                List<String> partc = new ArrayList<>();
-                for (DataSnapshot childSnap : snapshot.getChildren()){
-                    partc.clear();
+                readChatsChanges(snapshot);
 
-                    chName = (String) childSnap.child("chatName").getValue();
-                    lsMsg = (String) childSnap.child("lastMessage").getValue();
-                    msgRef = childSnap.child("messages").getRef();
-                    lastMsgTime = childSnap.child("lastMessageTime").getValue(long.class);
-
-                    for (DataSnapshot part : childSnap.child("paricipiants").getChildren()){
-                        partc.add(part.getValue(String.class));
-                    }
-
-                    if (partc.contains(currUser)) {
-                        chats.add(new ChatModel(chName, partc, msgRef, lastMsgTime, lsMsg));
-                    }
-
-                    msgAdapter.notifyDataSetChanged();
-                    Log.d("-----ValueEventListener-----", msgRef.toString());
-                }
-                chats.sort(Comparator.comparingLong(ChatModel::getLastMessageTime));
-                Collections.reverse(chats);
                 loadingSpinner.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                readChatsChanges(snapshot);
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                chats.clear();
+                msgAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.d("-----ERROR-----", error.getMessage());
+
             }
         };
 
-        chtRef.addValueEventListener(chtRefListener);
+        chtRef.addChildEventListener(chtRefListener);
+    }
+
+    private void readChatsChanges(DataSnapshot snapshot) {
+        chats.clear();
+
+        String chName = "";
+        String lsMsg = "";
+        DatabaseReference msgRef;
+        long lastMsgTime;
+        List<String> partc = new ArrayList<>();
+
+        partc.clear();
+
+        chName = (String) snapshot.child("chatName").getValue();
+        lsMsg = (String) snapshot.child("lastMessage").getValue();
+        msgRef = snapshot.child("messages").getRef();
+        lastMsgTime = snapshot.child("lastMessageTime").getValue(long.class);
+
+        for (DataSnapshot part : snapshot.child("paricipiants").getChildren()){
+            partc.add(part.getValue(String.class));
+        }
+
+        if (partc.contains(currUser)) {
+            chats.add(new ChatModel(chName, partc, msgRef, lastMsgTime, lsMsg));
+        }
+
+        msgAdapter.notifyDataSetChanged();
+        Log.d("-----ChildEventListener-----", msgRef.toString());
+
+        chats.sort(Comparator.comparingLong(ChatModel::getLastMessageTime));
+        Collections.reverse(chats);
     }
 
     @Override
@@ -147,9 +171,9 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
 
     }
 
-    @Override
+    /*@Override
     public void onPause() {
         super.onPause();
-        chtRef.removeEventListener(chtRefListener);
-    }
+        //chtRef.removeEventListener(chtRefListener);
+    }*/
 }

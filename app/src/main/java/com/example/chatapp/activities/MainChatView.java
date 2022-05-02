@@ -118,7 +118,8 @@ public class MainChatView extends AppCompatActivity {
 
                 @Override
                 public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+                    messagesList.get(messagesList.size() - 1).setIsseen(true);
+                    msgAdapter.notifyDataSetChanged();                                  //Проверяется последнее сообщение, костыль еще тот
                 }
 
                 @Override
