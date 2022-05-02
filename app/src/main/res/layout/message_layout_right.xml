@@ -30,4 +30,11 @@
         android:textSize="18sp"
         android:layout_alignParentEnd="true"
         android:text="Placeholder message" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/msgSeen"
+        android:layout_below="@id/userMessageText"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
 </RelativeLayout>

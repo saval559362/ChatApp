@@ -46,17 +46,30 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
-        holder.bindMessage(msgs.get(position));
+        Message msg = msgs.get(position);
+
+        holder.bindMessage(msg);
+
+        if(position == msgs.size() - 1 && getItemViewType(position) == MSG_TYPE_RIGHT){
+            if(msg.getIsseen()){
+                holder.txtSeen.setText("Seen");
+            }
+            else{
+                holder.txtSeen.setText("Delivered");
+            }
+        }
+        else {
+            holder.txtSeen.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (msgs.get(position).getSender().equals(fUser.getUid())){           //TODO какого то хуя начал выбивать ошибку
+        if (msgs.get(position).getSender().equals(fUser.getUid())){
             return MSG_TYPE_RIGHT;
         } else {
             return MSG_TYPE_LEFT;
         }
-        //return MSG_TYPE_LEFT;
     }
 
     @Override
@@ -69,6 +82,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         public RelativeLayout root;
         public TextView usName;
         public TextView usMsg;
+        public TextView txtSeen;
         //public CardView cView;
 
         public MessageViewHolder(View itemView) {
@@ -77,16 +91,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             root = itemView.findViewById(R.id.lineRoot);
             usName = itemView.findViewById(R.id.userName);
             usMsg = itemView.findViewById(R.id.userMessageText);
+            txtSeen = itemView.findViewById(R.id.msgSeen);
             //cView = itemView.findViewById(R.id.messageCard);
         }
 
         public void bindMessage(Message msg){
             usName.setText(msg.getSender());
             usMsg.setText(msg.getMessageText());
-        }
-
-        public void getViewType(int pos) {
-
         }
     }
 }

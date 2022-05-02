@@ -48,6 +48,8 @@ public class MainChatView extends AppCompatActivity {
     private String currUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private MessageAdapter msgAdapter;
 
+    private ChildEventListener msgListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +95,7 @@ public class MainChatView extends AppCompatActivity {
 
     //EventListener для считывания сообщений
     private void readMessages(){
-        msgRef.addChildEventListener(new ChildEventListener() {
+        msgListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
@@ -108,7 +110,8 @@ public class MainChatView extends AppCompatActivity {
                     messages.scrollToPosition(messagesList.size() - 1);
                     messageText.setText("");
 
-                    if (messagesList.get(messagesList.size() - 1).getReceiver().equals(currUser)) {
+                    if (messagesList.get(messagesList.size() - 1).getReceiver().equals(currUser) &&
+                            !messagesList.get(messagesList.size() - 1).getIsseen()) {
                         snapshot.getRef().child("isseen").setValue(true);
                     }
                 }
@@ -132,7 +135,15 @@ public class MainChatView extends AppCompatActivity {
                 public void onCancelled(@NonNull DatabaseError error) {
 
                 }
-            });
+            };
+
+        msgRef.addChildEventListener(msgListener);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        msgRef.removeEventListener(msgListener);
     }
     
 }

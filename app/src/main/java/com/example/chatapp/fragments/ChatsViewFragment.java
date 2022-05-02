@@ -103,7 +103,7 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
                     lastMsgTime = childSnap.child("lastMessageTime").getValue(long.class);
 
                     for (DataSnapshot part : childSnap.child("paricipiants").getChildren()){
-                        partc.add(part.getValue(String.class));                             //TODO скорее всего также неверно получает
+                        partc.add(part.getValue(String.class));
                     }
 
                     if (partc.contains(currUser)) {
