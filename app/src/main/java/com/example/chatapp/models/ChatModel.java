@@ -13,7 +13,8 @@ public class ChatModel {
     public List<String> Participants;
 
 
-    public ChatModel(String mchatName, List<String> participants, DatabaseReference messages, long lastMessageTime, String lastMessage) {
+    public ChatModel(String mchatName, List<String> participants, DatabaseReference messages,
+                     long lastMessageTime, String lastMessage) {
         ChatName = mchatName;
         Participants = participants;
         Messages = messages;

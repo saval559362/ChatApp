@@ -38,7 +38,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatListener{
+public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatListener {
 
     private RecyclerView chatsListRecycler;
     private DatabaseReference chtRef;
@@ -92,7 +92,6 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
                 readChatsChanges(snapshot);
-
                 loadingSpinner.setVisibility(View.GONE);
             }
 

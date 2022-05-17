@@ -17,6 +17,7 @@ import com.example.chatapp.R;
 import com.example.chatapp.adapters.MessageAdapter;
 import com.example.chatapp.models.Message;
 import com.example.chatapp.models.User;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -40,6 +41,7 @@ public class MainChatView extends AppCompatActivity {
 
     private RecyclerView messages;
     private EditText messageText;
+    private FloatingActionButton sendMessage;
 
     private LinearLayoutManager linearLayoutManager;
 
@@ -56,7 +58,7 @@ public class MainChatView extends AppCompatActivity {
         setContentView(R.layout.activity_main_chat_view);
 
         messages = findViewById(R.id.listMessages);
-        Button sendMessage = findViewById(R.id.sendMessageButt);
+        sendMessage = findViewById(R.id.sendMessageButt);
         messageText = findViewById(R.id.messageText);
 
         linearLayoutManager = new LinearLayoutManager(this);
@@ -99,15 +101,17 @@ public class MainChatView extends AppCompatActivity {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                    messagesList.add(new Message(snapshot.child("sender").getValue(String.class),
+                    Message msg = snapshot.getValue(Message.class);
+                    /*messagesList.add(new Message(snapshot.child("sender").getValue(String.class),
                             snapshot.child("receiver").getValue(String.class),
                             snapshot.child("messageText").getValue(String.class),
                             snapshot.child("messageTime").getValue(Long.class),
-                            snapshot.child("isseen").getValue(boolean.class)));
+                            snapshot.child("isseen").getValue(boolean.class)));*/
+                    messagesList.add(msg);
 
                     messagesList.sort(Comparator.comparingLong(Message::getMessageTime));
                     msgAdapter.notifyDataSetChanged();
-                    messages.scrollToPosition(messagesList.size() - 1);
+                    messages.smoothScrollToPosition(messagesList.size() - 1);
                     messageText.setText("");
 
                     if (messagesList.get(messagesList.size() - 1).getReceiver().equals(currUser) &&

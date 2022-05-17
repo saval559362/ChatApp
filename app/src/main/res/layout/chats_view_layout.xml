@@ -40,13 +40,26 @@
             android:layout_marginStart="5dp"
             android:text="LAST_MESSAGE"
             android:textSize="10sp" />
+
+
     </LinearLayout>
 
-        <TextView
-            android:id="@+id/chatDateTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="10/10/2022"
-            android:layout_alignParentEnd="true"/>
+    <TextView
+        android:id="@+id/messageCount"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_below="@+id/chatDateTime"
+        android:layout_alignParentEnd="true"
+        android:scaleType="centerInside"
+        android:text="10"
+        android:background="@drawable/circle"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/chatDateTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10/10/2022"
+        android:layout_alignParentEnd="true"/>
 </RelativeLayout>
 
