@@ -17,10 +17,6 @@ import com.example.chatapp.fragments.ProfileFragment;
 import com.example.chatapp.R;
 import com.example.chatapp.adapters.ViewPageAdapter;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,17 +27,15 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 vPager;
     private TextView toolbarText;
 
-    private static DatabaseReference chatRef;
-    private static FirebaseAuth userRef;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        chatRef = FirebaseDatabase.getInstance().getReference("Chats");
-        userRef = FirebaseAuth.getInstance();
+        /*chatRef = FirebaseDatabase.getInstance().getReference("Chats");
+        userRef = FirebaseAuth.getInstance();*/
+
+        //TODO получение чатов из под залогиненного пользователя
 
         //_nextButt = findViewById(R.id.mainChatButt);
         logOut = findViewById(R.id.action_log_out);
@@ -84,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setSupportActionBar(toolbarMain);
-        toolbarText.setText(userRef.getCurrentUser().getEmail());
 
     }
 
@@ -98,20 +91,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_log_out) {
-            FirebaseAuth.getInstance().signOut();
-
+            //FirebaseAuth.getInstance().signOut();
+            //TODO реализация logout пользователя
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
         return true;
     }
 
-    public static DatabaseReference getFirebaseReference() {
+    /*public static DatabaseReference getFirebaseReference() {
         return chatRef;
     }
 
     public static FirebaseAuth getFirebaseAuth() {
         return userRef;
-    }
+    }*/
 
 }

@@ -18,14 +18,11 @@ import android.widget.TextView;
 import com.example.chatapp.R;
 import com.example.chatapp.activities.MainActivity;
 import com.example.chatapp.tools.PictureCoder;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ProfileFragment extends Fragment {
-
-    private String currUid = MainActivity.getFirebaseAuth().getCurrentUser().getUid();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,7 +33,7 @@ public class ProfileFragment extends Fragment {
     private TextView profName;
     private TextView profEmail;
     private ImageView avatar;
-                                //TODO нет фото - ошибка
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -46,7 +43,7 @@ public class ProfileFragment extends Fragment {
         profName = view.findViewById(R.id.profileName);
         profEmail = view.findViewById(R.id.profileEmail);
 
-        PictureCoder coder = new PictureCoder();
+        /*PictureCoder coder = new PictureCoder();
 
         FirebaseFirestore.getInstance().collection("users").document(currUid)
                 .get().addOnSuccessListener(queryDocumentSnapshots -> {
@@ -60,7 +57,8 @@ public class ProfileFragment extends Fragment {
         }).addOnFailureListener(e -> {
             Log.d("--------PROFILE FIREBASE ERROR--------", e.getMessage());
 
-        });
+        });*/
+        //TODO реализация логики заполнения профиля
 
         return view;
     }

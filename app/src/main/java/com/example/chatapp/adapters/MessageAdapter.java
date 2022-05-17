@@ -13,22 +13,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chatapp.R;
 import com.example.chatapp.models.Message;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
     private List<Message> msgs;
-    FirebaseUser fUser;
     private int MSG_TYPE_RIGHT = 1;
     private int MSG_TYPE_LEFT = 0;
 
     public MessageAdapter(List<Message> messageList){
         msgs = messageList;
-        fUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     @NonNull
@@ -62,10 +57,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             holder.txtSeen.setVisibility(View.GONE);
         }
     }
-
+    //TODO тут заглушка, адаптер не рабочий
     @Override
     public int getItemViewType(int position) {
-        if (msgs.get(position).getSender().equals(fUser.getUid())){
+        if (msgs.get(position).getSender().equals("DORK")){
             return MSG_TYPE_RIGHT;
         } else {
             return MSG_TYPE_LEFT;

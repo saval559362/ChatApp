@@ -23,19 +23,6 @@ import com.example.chatapp.adapters.UserAdapter;
 import com.example.chatapp.models.ChatModel;
 import com.example.chatapp.models.ParticipiantsInfo;
 import com.example.chatapp.models.User;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -48,10 +35,6 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
     private RecyclerView usersListRec;
     private UserAdapter usAdapter;
     private List<User> users;
-
-    private DatabaseReference chtRef;
-    private String currUsUid;
-    private FirebaseFirestore dbUsers;
 
     private List<ParticipiantsInfo> participiantsInfoList;
 
@@ -74,9 +57,10 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         usersListRec.setLayoutManager(linearLayoutManager);
         usersListRec.setHasFixedSize(true);
-        dbUsers = FirebaseFirestore.getInstance();
+        /*dbUsers = FirebaseFirestore.getInstance();
         chtRef = MainActivity.getFirebaseReference();
-        currUsUid = MainActivity.getFirebaseAuth().getCurrentUser().getUid();
+        currUsUid = MainActivity.getFirebaseAuth().getCurrentUser().getUid();*/
+        //TODO получение списка контактов
         participiantsInfoList = new ArrayList<>();
 
         return view;
@@ -89,35 +73,10 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
         usAdapter = new UserAdapter(users, this);
         usersListRec.setAdapter(usAdapter);
 
-        readUsers();
-        readParticipiants();
-    }
-
-    public void readParticipiants() {
-        List<String> parts = new ArrayList<>();
-        chtRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-
-                    for (DataSnapshot usUid : data.child("paricipiants").getChildren()) {
-                        parts.add(usUid.getValue(String.class));
-                    }
-
-                    List<String> tempPart = new ArrayList<>(parts);
-                    participiantsInfoList.add(new ParticipiantsInfo(tempPart, data.getRef().toString()));
-                    parts.clear();
-                }
-                spinner.setVisibility(View.GONE);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
     }
 
     public void readUsers(){
-        dbUsers.collection("users").get()
+        /*dbUsers.collection("users").get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                     for (DocumentSnapshot d : list) {
@@ -136,13 +95,14 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                });*/
+        //TODO Считывание контактов пользователя
     }
     private boolean usersExist = false;
 
     @Override
     public void onUserClick(int position) {
-        User currUser = users.get(position);
+        /*User currUser = users.get(position);
         String ref = "";
 
         for (ParticipiantsInfo part : participiantsInfoList) {
@@ -181,7 +141,8 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
         }
 
         usersExist = false;
-        ref = "";
+        ref = "";*/
+        //TODO реализация логики создания чата, если такого нет, при клике на пользователя
 
     }
 }

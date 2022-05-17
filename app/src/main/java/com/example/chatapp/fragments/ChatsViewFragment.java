@@ -23,14 +23,6 @@ import com.example.chatapp.activities.MainChatView;
 import com.example.chatapp.adapters.ChatAdapter;
 import com.example.chatapp.models.ChatModel;
 import com.example.chatapp.models.Message;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,14 +33,11 @@ import java.util.Objects;
 public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatListener {
 
     private RecyclerView chatsListRecycler;
-    private DatabaseReference chtRef;
     private ChatAdapter msgAdapter;
     private List<ChatModel> chats;
     private String currUser;
 
     private RelativeLayout loadingSpinner;
-
-    private ChildEventListener chtRefListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,8 +56,9 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
         chatsListRecycler.setLayoutManager(linearLayoutManager);
         chatsListRecycler.setHasFixedSize(true);
 
-        currUser = Objects.requireNonNull(MainActivity.getFirebaseAuth().getCurrentUser()).getUid();                //FirebaseAuth.getInstance().getCurrentUser().getUid();
-        chtRef = MainActivity.getFirebaseReference();
+        /*currUser = Objects.requireNonNull(MainActivity.getFirebaseAuth().getCurrentUser()).getUid();                //FirebaseAuth.getInstance().getCurrentUser().getUid();
+        chtRef = MainActivity.getFirebaseReference();*/
+        //TODO получение текущего пользователя и списка чатов, где он участник
 
         Log.d("----CHATSVIEWFRAGMENT----", "onCreateView done");
         return view;
@@ -87,7 +77,7 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
 
     public void readChats(){
 
-        chtRefListener = new ChildEventListener() {
+        /*chtRefListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
@@ -117,11 +107,12 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
             }
         };
 
-        chtRef.addChildEventListener(chtRefListener);
+        chtRef.addChildEventListener(chtRefListener);*/
+        //TODO Listener на чаты
     }
 
-    private void readChatsChanges(DataSnapshot snapshot) {
-        chats.clear();
+    private void readChatsChanges() {
+        /*chats.clear();
 
         String chName = "";
         String lsMsg = "";
@@ -148,12 +139,13 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
         Log.d("-----ChildEventListener-----", msgRef.toString());
 
         chats.sort(Comparator.comparingLong(ChatModel::getLastMessageTime));
-        Collections.reverse(chats);
+        Collections.reverse(chats);*/
+        //TODO разичные изменения чата
     }
 
     @Override
     public void onChatClick(int position) {
-        ChatModel currentChat = chats.get(position);
+        /*ChatModel currentChat = chats.get(position);
         Intent intent = new Intent(getContext(), MainChatView.class);
         String sender = currUser;
         String reciever = "";
@@ -166,8 +158,8 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
 
         intent.putExtra("msgRef", currentChat.Messages.toString());
         intent.putExtra("receiver", reciever);
-        startActivity(intent);
-
+        startActivity(intent);*/
+        //TODO переход в выбранный чат
     }
 
     /*@Override

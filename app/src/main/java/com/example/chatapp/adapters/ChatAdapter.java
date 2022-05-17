@@ -17,10 +17,6 @@ import android.widget.TextView;
 
 import com.example.chatapp.models.ChatModel;
 import com.example.chatapp.R;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -66,34 +62,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         holder.setChatLastMsg(chat.getLastMessage());
         holder.setChatLastMsgTime(dateForCht.format(messageDate));
 
-        DatabaseReference msgRefOnceRead = chat.Messages;           //TODO подсчет непрочитанных сообщений
-
-        msgRefOnceRead.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        //TODO подсчет непрочитанных сообщений
 
     }
 
@@ -151,7 +120,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
         @Override
         public void onClick(View view) {
-            onChatListener.onChatClick(getAbsoluteAdapterPosition());
+            //onChatListener.onChatClick(getAbsoluteAdapterPosition());
         }
 
         @Override

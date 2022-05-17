@@ -18,13 +18,6 @@ import com.example.chatapp.adapters.MessageAdapter;
 import com.example.chatapp.models.Message;
 import com.example.chatapp.models.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.type.DateTime;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,12 +38,8 @@ public class MainChatView extends AppCompatActivity {
 
     private LinearLayoutManager linearLayoutManager;
 
-    private DatabaseReference msgRef;
     private List<Message> messagesList;
-    private String currUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private MessageAdapter msgAdapter;
-
-    private ChildEventListener msgListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +57,7 @@ public class MainChatView extends AppCompatActivity {
         String ref = getIntent().getExtras().getString("msgRef");
         String reciever = getIntent().getExtras().getString("receiver");
 
-        msgRef = FirebaseDatabase.getInstance().getReferenceFromUrl(ref);
+        //TODO инициализация базы
 
         messagesList = new ArrayList<>();
         msgAdapter = new MessageAdapter(messagesList);
@@ -81,7 +70,7 @@ public class MainChatView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 long time = new Date().getTime();
-                Message msg = new Message(currUser, reciever, messageText.getText().toString(),
+                /*Message msg = new Message(currUser, reciever, messageText.getText().toString(),
                         time, false);
 
 
@@ -90,23 +79,24 @@ public class MainChatView extends AppCompatActivity {
                 mRef.child("lastMessage").setValue(messageText.getText().toString());
                 mRef.child("lastMessageTime").setValue(time);
 
-                msgRef.child(UUID.randomUUID().toString().replace('-','f')).setValue(msg);
+                msgRef.child(UUID.randomUUID().toString().replace('-','f')).setValue(msg);*/
+                //TODO запись нового сообщения в базу
             }
         });
     }
 
     //EventListener для считывания сообщений
     private void readMessages(){
-        msgListener = new ChildEventListener() {
+        /*msgListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
                     Message msg = snapshot.getValue(Message.class);
-                    /*messagesList.add(new Message(snapshot.child("sender").getValue(String.class),
+                    *//*messagesList.add(new Message(snapshot.child("sender").getValue(String.class),
                             snapshot.child("receiver").getValue(String.class),
                             snapshot.child("messageText").getValue(String.class),
                             snapshot.child("messageTime").getValue(Long.class),
-                            snapshot.child("isseen").getValue(boolean.class)));*/
+                            snapshot.child("isseen").getValue(boolean.class)));*//*
                     messagesList.add(msg);
 
                     messagesList.sort(Comparator.comparingLong(Message::getMessageTime));
@@ -142,13 +132,15 @@ public class MainChatView extends AppCompatActivity {
                 }
             };
 
-        msgRef.addChildEventListener(msgListener);
+        msgRef.addChildEventListener(msgListener);*/
+        //TODO Listener на таблицу сообщений
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        msgRef.removeEventListener(msgListener);
+        //msgRef.removeEventListener(msgListener);
+        //TODO выгрузка Listener
     }
     
 }

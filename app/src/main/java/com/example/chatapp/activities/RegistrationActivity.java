@@ -28,7 +28,7 @@ public class RegistrationActivity extends AppCompatActivity {
         phone = findViewById(R.id.user_phone);
         enReg = findViewById(R.id.endReg);
 
-        enReg.setOnClickListener(view -> {
+        /*enReg.setOnClickListener(view -> {
             Intent intent = new Intent(view.getContext(), LoginActivity.class);
             intent.putExtra("USER_EMAIL", usEmail.getText().toString());
             intent.putExtra("USER_PASS", usPass.getText().toString());
@@ -37,7 +37,8 @@ public class RegistrationActivity extends AppCompatActivity {
             startActivity(intent);
             Toast.makeText(this, "Data send!", Toast.LENGTH_SHORT).show();
             this.finish();
-        });
+        });*/
+        //TODO Реализация логики регистрации
 
 
     }
