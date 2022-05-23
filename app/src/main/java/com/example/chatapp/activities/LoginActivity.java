@@ -10,13 +10,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.chatapp.JDBC;
 import com.example.chatapp.R;
+import com.example.chatapp.models.User;
 
 import java.util.HashMap;
 import java.util.Objects;
 
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements JDBC.CallBackLogin{
 
     private Button singIn;
     private Button singUp;
@@ -38,7 +40,10 @@ public class LoginActivity extends AppCompatActivity {
         singIn.setOnClickListener(view -> {
             String endEmail = String.valueOf(userEmail.getText());
             String endPass = String.valueOf(userPass.getText());
-            signIn(endEmail, endPass);});
+
+            signIn(endEmail, endPass);
+
+            });
 
         singUp.setOnClickListener(view -> {
             Intent intent = new Intent(view.getContext(), RegistrationActivity.class);
@@ -61,66 +66,26 @@ public class LoginActivity extends AppCompatActivity {
         //TODO Проверка логина пользователя
     }
 
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
 
-        receiveDataAndSignUp();
-    }
-
-    public void receiveDataAndSignUp()
-    {
-
-        /*Intent i = getIntent();
-        String usEmail = i.getStringExtra("USER_EMAIL");
-        String usPass = i.getStringExtra("USER_PASS");
-        String usNick = i.getStringExtra("USER_NICK");
-        String usPhone = i.getStringExtra("USER_NUMBER");
-        if (usEmail == null && usPass == null){
-
-        } else {
-            signUp(usEmail, usPass, usNick, usPhone);
-            Toast.makeText(this, "Registration complete", Toast.LENGTH_SHORT).show();
-        }*/
-        //TODO Прием данных из Activity RegistrationActivity
-        //сохранение данных
-    }
     //TODO обработка непрвильного логина или пароля
     private void signIn(String email, String password) {
-        /*mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(LoginActivity.this, "Authentication succeeded.",
-                                    Toast.LENGTH_SHORT).show();
-                            updateUi(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            updateUi(null);
-                        }
-                    }
-                });*/
+        JDBC logAct = new JDBC();
+        logAct.registerCallback(this);
+        logAct.logUser(email, password);
+
         //TODO Вход в систему
     }
 
-    private void updateUi()
-    {
-        //TODO реализация открытия главного окна
-        /*if (user != null) {
+
+    @Override
+    public void logUser(boolean authComplete) {
+        if (authComplete) {
+            runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Auth complete!", Toast.LENGTH_SHORT).show());
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+        } else {
+            runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Auth fail!", Toast.LENGTH_SHORT).show());
         }
-        else {
-
-        }*/
 
     }
 }

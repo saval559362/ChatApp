@@ -5,38 +5,53 @@ import java.util.List;
 
 public class ChatModel {
 
-    public String ChatName;
-    public String LastMessage;
-    private long LastMessageTime;
-    public List<String> Participants;
+    public int ChatId;
+    public String Name;
+    public String CreatorUid;
+    public String[] Participants;
 
 
-    public ChatModel(String mchatName, List<String> participants,
-                     long lastMessageTime, String lastMessage) {
-        ChatName = mchatName;
+    public ChatModel(int chatId, String name, String creatorUid, String[] participants) {
+        ChatId = chatId;
+        Name = name;
+        CreatorUid = creatorUid;
         Participants = participants;
-        LastMessageTime = lastMessageTime;
-        LastMessage = lastMessage;
     }
 
     public ChatModel() {
 
     }
 
-    public String getChatName() {
-        return ChatName;
+    public int getChatId() {
+        return ChatId;
     }
 
-    public List<String> getParticipants() {
+    public void setChatId(int chatId) {
+        ChatId = chatId;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public void setName(String name) {
+        Name = name;
+    }
+
+    public String getCreatorUid() {
+        return CreatorUid;
+    }
+
+    public void setCreatorUid(String creatorUid) {
+        CreatorUid = creatorUid;
+    }
+
+    public String[] getParticipants() {
         return Participants;
     }
 
-    public long getLastMessageTime() {
-        return LastMessageTime;
-    }
-
-    public String getLastMessage() {
-        return LastMessage;
+    public void setParticipants(String[] participants) {
+        Participants = participants;
     }
 
 }

@@ -8,6 +8,7 @@ buildscript {
         // Add the following line:
         classpath 'com.google.gms:google-services:4.3.10'  // Google Services plugin
         classpath 'com.google.firebase:firebase-appdistribution-gradle:3.0.0'
+        classpath 'org.postgresql:postgresql:42.3.4'
     }
 }
 
