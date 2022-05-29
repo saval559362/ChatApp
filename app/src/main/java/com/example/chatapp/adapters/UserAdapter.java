@@ -70,7 +70,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
         @Override
         public void onClick(View view) {
-            //onUserListener.onUserClick(getAbsoluteAdapterPosition());
+            onUserListener.onUserClick(getAdapterPosition());
         }
 
         @Override

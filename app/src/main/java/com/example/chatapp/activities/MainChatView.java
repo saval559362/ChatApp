@@ -3,9 +3,12 @@ package com.example.chatapp.activities;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 
+import com.example.chatapp.JDBC;
 import com.example.chatapp.R;
 import com.example.chatapp.adapters.MessageAdapter;
 import com.example.chatapp.models.Message;
@@ -30,7 +34,7 @@ import java.util.Map;
 import java.util.UUID;
 
 
-public class MainChatView extends AppCompatActivity {
+public class MainChatView extends AppCompatActivity implements JDBC.CallBackReadMessages, JDBC.CallBackListenMsg{
 
     private RecyclerView messages;
     private EditText messageText;
@@ -38,8 +42,10 @@ public class MainChatView extends AppCompatActivity {
 
     private LinearLayoutManager linearLayoutManager;
 
-    private List<Message> messagesList;
+    private ObservableList<Message> messagesList;
     private MessageAdapter msgAdapter;
+
+    private String usUid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,94 +60,83 @@ public class MainChatView extends AppCompatActivity {
         messages.setLayoutManager(linearLayoutManager);
         messages.setHasFixedSize(true);
 
-        String ref = getIntent().getExtras().getString("msgRef");
-        String reciever = getIntent().getExtras().getString("receiver");
+        int chatId = getIntent().getExtras().getInt("chat_id");
 
-        //TODO инициализация базы
+        SharedPreferences sPref =
+                getSharedPreferences(String.valueOf(R.string.app_settings), MODE_PRIVATE);
+        usUid = sPref.getString(String.valueOf(R.string.us_uid), "");
 
-        messagesList = new ArrayList<>();
-        msgAdapter = new MessageAdapter(messagesList);
+        messagesList = new ObservableArrayList<>();
+        msgAdapter = new MessageAdapter(messagesList, usUid);
         messages.setAdapter(msgAdapter);
 
-        readMessages();
+        messagesList.addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Message>>() {
+            @Override
+            public void onChanged(ObservableList<Message> sender) {
+                msgAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onItemRangeChanged(ObservableList<Message> sender, int positionStart, int itemCount) {
+                msgAdapter.notifyItemRangeChanged(positionStart, itemCount);
+            }
+
+            @Override
+            public void onItemRangeInserted(ObservableList<Message> sender, int positionStart, int itemCount) {
+                msgAdapter.notifyItemRangeInserted(positionStart, itemCount);
+            }
+
+            @Override
+            public void onItemRangeMoved(ObservableList<Message> sender, int fromPosition, int toPosition, int itemCount) {
+                msgAdapter.notifyItemMoved(fromPosition, toPosition);
+            }
+
+            @Override
+            public void onItemRangeRemoved(ObservableList<Message> sender, int positionStart, int itemCount) {
+                msgAdapter.notifyItemRangeRemoved(positionStart, itemCount);
+            }
+        });
+
+        readMessages(chatId);
 
         //Listener на кнопку для отправки сообщений
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 long time = new Date().getTime();
-                /*Message msg = new Message(currUser, reciever, messageText.getText().toString(),
-                        time, false);
 
-
-                String ref = msgRef.getRef().toString().replace("/messages", "");
-                DatabaseReference mRef = FirebaseDatabase.getInstance().getReferenceFromUrl(ref);
-                mRef.child("lastMessage").setValue(messageText.getText().toString());
-                mRef.child("lastMessageTime").setValue(time);
-
-                msgRef.child(UUID.randomUUID().toString().replace('-','f')).setValue(msg);*/
                 //TODO запись нового сообщения в базу
             }
         });
     }
 
     //EventListener для считывания сообщений
-    private void readMessages(){
-        /*msgListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+    private void readMessages(int chatId){
 
-                    Message msg = snapshot.getValue(Message.class);
-                    *//*messagesList.add(new Message(snapshot.child("sender").getValue(String.class),
-                            snapshot.child("receiver").getValue(String.class),
-                            snapshot.child("messageText").getValue(String.class),
-                            snapshot.child("messageTime").getValue(Long.class),
-                            snapshot.child("isseen").getValue(boolean.class)));*//*
-                    messagesList.add(msg);
+        JDBC readMsg = new JDBC();
+        readMsg.registerCallBackReadMessages(this);
+        readMsg.readMessages(chatId, usUid);
 
-                    messagesList.sort(Comparator.comparingLong(Message::getMessageTime));
-                    msgAdapter.notifyDataSetChanged();
-                    messages.smoothScrollToPosition(messagesList.size() - 1);
-                    messageText.setText("");
-
-                    if (messagesList.get(messagesList.size() - 1).getReceiver().equals(currUser) &&
-                            !messagesList.get(messagesList.size() - 1).getIsseen()) {
-                        snapshot.getRef().child("isseen").setValue(true);
-                    }
-                }
-
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                    messagesList.get(messagesList.size() - 1).setIsseen(true);
-                    msgAdapter.notifyDataSetChanged();                                  //Проверяется последнее сообщение, костыль еще тот
-                }
-
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            };
-
-        msgRef.addChildEventListener(msgListener);*/
-        //TODO Listener на таблицу сообщений
+        readMsg.registerCallBackListenMsg(this);
+        readMsg.listenMessages();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        //msgRef.removeEventListener(msgListener);
+
         //TODO выгрузка Listener
     }
-    
+
+    @Override
+    public void readMsg(List<Message> messages) {
+        messagesList.addAll(messages);
+    }
+
+    @Override
+    public void beginListen(Message msg) {
+        messagesList.add(msg);
+
+    }
 }
 

@@ -1,11 +1,15 @@
 package com.example.chatapp.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableList;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.example.chatapp.JDBC;
 import com.example.chatapp.R;
 import com.example.chatapp.activities.MainActivity;
 import com.example.chatapp.activities.MainChatView;
@@ -30,18 +35,21 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatListener {
+public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatListener, JDBC.CallBackReadChats {
 
     private RecyclerView chatsListRecycler;
-    private ChatAdapter msgAdapter;
-    private List<ChatModel> chats;
+    private ChatAdapter chtAdapter;
+    private ObservableList<ChatModel> chats;
     private String currUser;
 
     private RelativeLayout loadingSpinner;
 
+    private JDBC readData;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -56,20 +64,56 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
         chatsListRecycler.setLayoutManager(linearLayoutManager);
         chatsListRecycler.setHasFixedSize(true);
 
-        /*currUser = Objects.requireNonNull(MainActivity.getFirebaseAuth().getCurrentUser()).getUid();                //FirebaseAuth.getInstance().getCurrentUser().getUid();
-        chtRef = MainActivity.getFirebaseReference();*/
         //TODO получение текущего пользователя и списка чатов, где он участник
 
-        Log.d("----CHATSVIEWFRAGMENT----", "onCreateView done");
+        SharedPreferences sPref =
+                getActivity().getSharedPreferences(String.valueOf(R.string.app_settings), Context.MODE_PRIVATE);
+        String usUid = sPref.getString(String.valueOf(R.string.us_uid), "");
+
+        readData = new JDBC();
+        readData.registerCallBackReadChats(this);
+        readData.readChats(usUid);
+
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
+        chats = new ObservableArrayList<>();
+        chtAdapter = new ChatAdapter(chats, this);
+        chatsListRecycler.setAdapter(chtAdapter);
 
-        chats = new ArrayList<>();
-        msgAdapter = new ChatAdapter(chats, this);
-        chatsListRecycler.setAdapter(msgAdapter);
+        chats.addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<ChatModel>>() {
+            @Override
+            public void onChanged(ObservableList<ChatModel> sender) {
+                chtAdapter.notifyDataSetChanged();
+                Log.d("NOTIFYCALLBACK", "onChanged");
+            }
+
+            @Override
+            public void onItemRangeChanged(ObservableList<ChatModel> sender, int positionStart, int itemCount) {
+                chtAdapter.notifyItemRangeChanged(positionStart, itemCount);
+                Log.d("NOTIFYCALLBACK", "onItemRangeChanged");
+            }
+
+            @Override
+            public void onItemRangeInserted(ObservableList<ChatModel> sender, int positionStart, int itemCount) {
+                chtAdapter.notifyItemRangeInserted(positionStart, itemCount);
+                Log.d("NOTIFYCALLBACK", "onItemRangeInserted");
+            }
+
+            @Override
+            public void onItemRangeMoved(ObservableList<ChatModel> sender, int fromPosition, int toPosition, int itemCount) {
+                chtAdapter.notifyItemMoved(fromPosition, toPosition);
+                Log.d("NOTIFYCALLBACK", "onItemRangeMoved");
+            }
+
+            @Override
+            public void onItemRangeRemoved(ObservableList<ChatModel> sender, int positionStart, int itemCount) {
+                chtAdapter.notifyItemRangeRemoved(positionStart, itemCount);
+                Log.d("NOTIFYCALLBACK", "onItemRangeRemoved");
+            }
+        });
 
         readChats();
         Log.d("----CHATSVIEWFRAGMENT----", "onViewCreated done");
@@ -77,89 +121,26 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
 
     public void readChats(){
 
-        /*chtRefListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                readChatsChanges(snapshot);
-                loadingSpinner.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                readChatsChanges(snapshot);
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                chats.clear();
-                msgAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-
-        chtRef.addChildEventListener(chtRefListener);*/
-        //TODO Listener на чаты
     }
 
     private void readChatsChanges() {
-        /*chats.clear();
 
-        String chName = "";
-        String lsMsg = "";
-        DatabaseReference msgRef;
-        long lastMsgTime;
-        List<String> partc = new ArrayList<>();
-
-        partc.clear();
-
-        chName = (String) snapshot.child("chatName").getValue();
-        lsMsg = (String) snapshot.child("lastMessage").getValue();
-        msgRef = snapshot.child("messages").getRef();
-        lastMsgTime = snapshot.child("lastMessageTime").getValue(long.class);
-
-        for (DataSnapshot part : snapshot.child("paricipiants").getChildren()){
-            partc.add(part.getValue(String.class));
-        }
-
-        if (partc.contains(currUser)) {
-            chats.add(new ChatModel(chName, partc, msgRef, lastMsgTime, lsMsg));
-        }
-
-        msgAdapter.notifyDataSetChanged();
-        Log.d("-----ChildEventListener-----", msgRef.toString());
-
-        chats.sort(Comparator.comparingLong(ChatModel::getLastMessageTime));
-        Collections.reverse(chats);*/
         //TODO разичные изменения чата
     }
 
     @Override
     public void onChatClick(int position) {
-        /*ChatModel currentChat = chats.get(position);
+        ChatModel chat = chats.get(position);
         Intent intent = new Intent(getContext(), MainChatView.class);
-        String sender = currUser;
-        String reciever = "";
+        intent.putExtra("chat_id", chat.ChatId);
+        startActivity(intent);
+    }
 
-        for (String part : currentChat.Participants) {
-            if (!part.equals(sender)) {
-                reciever = part;
-            }
-        }
+    @Override
+    public void readChats(ObservableList<ChatModel> chatList) {
+        chats.addAll(chatList);
 
-        intent.putExtra("msgRef", currentChat.Messages.toString());
-        intent.putExtra("receiver", reciever);
-        startActivity(intent);*/
-        //TODO переход в выбранный чат
     }
 
     /*@Override

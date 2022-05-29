@@ -1,6 +1,8 @@
 package com.example.chatapp.models;
 
 
+import androidx.databinding.ObservableList;
+
 import java.util.List;
 
 public class ChatModel {

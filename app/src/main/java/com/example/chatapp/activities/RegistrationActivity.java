@@ -3,6 +3,7 @@ package com.example.chatapp.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,6 +51,14 @@ public class RegistrationActivity extends AppCompatActivity implements JDBC.Call
 
     @Override
     public void regUser(User user) {
+        SharedPreferences sPref =
+                getSharedPreferences(String.valueOf(R.string.app_settings), MODE_PRIVATE);     //Сохранение текущего пользователя в SharedPreferences
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putString(String.valueOf(R.string.us_email), user.Email);
+        ed.putString(String.valueOf(R.string.us_pass), user.Password);
+        ed.putString(String.valueOf(R.string.us_uid), user.Uid);
+        ed.apply();
+
         runOnUiThread(() -> Toast.makeText(this, "Registration complete!", Toast.LENGTH_SHORT).show());
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

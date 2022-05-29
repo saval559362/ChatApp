@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.ObservableList;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.widget.ImageView;
@@ -25,12 +26,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
 
-    private List<ChatModel> chats;
+    private ObservableList<ChatModel> chats;
     private OnChatListener mOnChatListener;
 
-    public ChatAdapter(List<ChatModel> chatsList, OnChatListener onChatListener){
+    public ChatAdapter(ObservableList<ChatModel> chatsList, OnChatListener onChatListener){
         chats = chatsList;
         this.mOnChatListener = onChatListener;
+
     }
 
     @NonNull
@@ -43,9 +45,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ChatAdapter.ChatViewHolder holder, int position) {
-        /*ChatModel chat = chats.get(position);
+        ChatModel chat = chats.get(position);
 
-        long time = chat.getLastMessageTime();
+        long time = 0;
         Date messageDate = new Date(time);
         Date todayDate = new Date(new Date().getTime());
 
@@ -58,9 +60,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             dateForCht = new SimpleDateFormat("EEE, d MMM");
         }
 
-        holder.setChatName(chat.getChatName());
-        holder.setChatLastMsg(chat.getLastMessage());
-        holder.setChatLastMsgTime(dateForCht.format(messageDate));*/
+        holder.setChatName(chat.getName());
+        //holder.setChatLastMsg(chat.getLastMessage());
+        holder.setChatLastMsgTime(dateForCht.format(messageDate));
 
         //TODO подсчет непрочитанных сообщений\ Переделать адаптер
 
@@ -120,7 +122,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
         @Override
         public void onClick(View view) {
-            //onChatListener.onChatClick(getAbsoluteAdapterPosition());
+            onChatListener.onChatClick(getAdapterPosition());
         }
 
         @Override

@@ -3,7 +3,9 @@ package com.example.chatapp.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -55,13 +57,17 @@ public class LoginActivity extends AppCompatActivity implements JDBC.CallBackLog
     public void onStart()
     {
         super.onStart();
-        /*FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if (currentUser != null)
-        {
-            Toast.makeText(this, "You already sign in", Toast.LENGTH_SHORT).show();
-            updateUi(currentUser);
-        }*/
+        SharedPreferences sPref =
+                getSharedPreferences(String.valueOf(R.string.app_settings), Context.MODE_PRIVATE);
+        String usEmail = sPref.getString(String.valueOf(R.string.us_email), "");
+        String usPass = sPref.getString(String.valueOf(R.string.us_pass), "");
+
+        if (usEmail != null && usPass != null) {
+            signIn(usEmail, usPass);
+            Toast.makeText(this, "You already sign in!", Toast.LENGTH_SHORT).show();
+        }
+
 
         //TODO Проверка логина пользователя
     }
@@ -73,13 +79,25 @@ public class LoginActivity extends AppCompatActivity implements JDBC.CallBackLog
         logAct.registerCallback(this);
         logAct.logUser(email, password);
 
+        SharedPreferences sPref =
+                getSharedPreferences(String.valueOf(R.string.app_settings),MODE_PRIVATE);     //Сохранение текущего пользователя в SharedPreferences
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putString(String.valueOf(R.string.us_email), email);
+        ed.putString(String.valueOf(R.string.us_pass), password);
+        ed.apply();
         //TODO Вход в систему
     }
 
 
     @Override
-    public void logUser(boolean authComplete) {
+    public void logUser(boolean authComplete, String userUid) {
         if (authComplete) {
+
+            SharedPreferences sPref = getSharedPreferences(String.valueOf(R.string.app_settings), MODE_PRIVATE);     //Сохранение текущего пользователя в SharedPreferences
+            SharedPreferences.Editor ed = sPref.edit();
+            ed.putString(String.valueOf(R.string.us_uid), userUid);
+            ed.apply();
+
             runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Auth complete!", Toast.LENGTH_SHORT).show());
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);

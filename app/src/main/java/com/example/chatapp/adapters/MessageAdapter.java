@@ -1,5 +1,7 @@
 package com.example.chatapp.adapters;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +24,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private int MSG_TYPE_RIGHT = 1;
     private int MSG_TYPE_LEFT = 0;
 
-    public MessageAdapter(List<Message> messageList){
+    private String usUid;
+
+    public MessageAdapter(List<Message> messageList, String usUid){
         msgs = messageList;
+        this.usUid = usUid;
     }
 
     @NonNull
@@ -57,10 +62,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             holder.txtSeen.setVisibility(View.GONE);
         }
     }
-    //TODO тут заглушка, адаптер не рабочий
+
     @Override
     public int getItemViewType(int position) {
-        if (msgs.get(position).getSender().equals("DORK")){
+        if (msgs.get(position).getSender().equals(usUid)){
             return MSG_TYPE_RIGHT;
         } else {
             return MSG_TYPE_LEFT;

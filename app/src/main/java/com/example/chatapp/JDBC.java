@@ -1,11 +1,21 @@
 package com.example.chatapp;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.util.Log;
+
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableList;
 
 import com.example.chatapp.models.ChatModel;
 import com.example.chatapp.models.Message;
 import com.example.chatapp.models.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.postgresql.PGConnection;
+import org.postgresql.PGNotification;
 
 import java.sql.Array;
 import java.sql.Connection;
@@ -13,7 +23,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -30,7 +42,7 @@ public class JDBC {
     }
 
     public interface CallBackLogin {
-        void logUser(boolean authComplete);
+        void logUser(boolean authComplete, String userUid);
     }
 
     CallBackLogin callBack;
@@ -59,6 +71,36 @@ public class JDBC {
         this.callBackCheck = callBackCheck;
     }
 
+    public interface CallBackReadChats {
+        void readChats(ObservableList<ChatModel> chatList);
+    }
+
+    CallBackReadChats callBackReadChats;
+
+    public void registerCallBackReadChats(CallBackReadChats callBackReadChats) {
+        this.callBackReadChats = callBackReadChats;
+    }
+
+    public interface CallBackReadMessages {
+        void readMsg(List<Message> messages);
+    }
+
+    CallBackReadMessages callBackReadMessages;
+
+    public void registerCallBackReadMessages(CallBackReadMessages callBackReadMessages) {
+        this.callBackReadMessages = callBackReadMessages;
+    }
+
+    public interface CallBackListenMsg {
+        void beginListen(Message msg);
+    }
+
+    CallBackListenMsg callBackListenMsg;
+
+    public void registerCallBackListenMsg(CallBackListenMsg callBackListenMsg) {
+        this.callBackListenMsg = callBackListenMsg;
+    }
+
     public void logUser(String email, String pass) {
         Runnable taskLog = () -> {
             String getQuery = "select * from users where email = '" + email +
@@ -83,13 +125,14 @@ public class JDBC {
 
             if (findedUser != null) {
                 Log.d("POSTGRES", "User found: " + findedUser);
-                callBack.logUser(true);
+                callBack.logUser(true, findedUser);
             } else {
-                callBack.logUser(false);
+                callBack.logUser(false, findedUser);
             }
         };
         Thread thread = new Thread(taskLog);
         thread.start();
+
     }
 
     public void checkUser(String email) {
@@ -150,36 +193,30 @@ public class JDBC {
 
     }
 
-    public void readMessages(int chatId) {
+    public void readMessages(int chatId, String usUid) {
         Runnable taskRead = () -> {
-            String getQuery = "select * from messages where (sender =? OR receiver =?) AND chat_id =?";
+            String getQuery = "select * from messages where (sender = '" + usUid +
+                    "' OR receiver = '" + usUid + "') AND chat_id = " + chatId;
             List<Message> messageList = new ArrayList<>();
             // Step 1: Establishing a Connection
             try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
                  // Step 2:Create a statement using connection object
                  PreparedStatement preparedStatement = connection.prepareStatement(getQuery)) {
-                preparedStatement.setString(1, findedUser);
-                preparedStatement.setString(2, findedUser);
-                preparedStatement.setInt(3, chatId);
                 // Step 3: Execute the query or update query
                 ResultSet rs = preparedStatement.executeQuery();
-                int i = 1;
                 // Step 4: Process the ResultSet object.
                 while (rs.next()) {
-                    /*messageList.add(new Message(
+                    messageList.add(new Message(
                             rs.getInt("message_id"),
                             rs.getInt("chat_id"),
                             rs.getString("sender"),
                             rs.getString("receiver"),
                             rs.getString("content"),
                             rs.getInt("date_create"),
-                            rs.getBoolean("is_seen")));*/
-                    Object msgObj = rs.getObject(i);
-                    Message msg = (Message)msgObj;
-                    messageList.add(msg);
-                    i++;
+                            rs.getBoolean("is_seen")));
+
                 }
-                i = 1;
+                callBackReadMessages.readMsg(messageList);
             } catch (SQLException e) {
                 printSQLException(e);
             }
@@ -190,15 +227,15 @@ public class JDBC {
         thread.start();
     }
 
-    public void readChats(User user) {
+    public void readChats(String usUId) {
         Runnable taskRead = () -> {
-            String getQuery = "SELECT * FROM chats WHERE '?' = ANY(participiants)";
-            List<ChatModel> chatsList = new ArrayList<>();
+            String getQuery = "SELECT * FROM chats WHERE '"+ usUId + "' = ANY(participiants)";
+            ObservableList<ChatModel> chatsList = new ObservableArrayList<>();
             // Step 1: Establishing a Connection
             try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
                  // Step 2:Create a statement using connection object
                  PreparedStatement preparedStatement = connection.prepareStatement(getQuery)) {
-                preparedStatement.setString(1, user.Uid);
+                //preparedStatement.setString(1, usUId);
                 // Step 3: Execute the query or update query
                 ResultSet rs = preparedStatement.executeQuery();
 
@@ -212,6 +249,7 @@ public class JDBC {
                             rs.getString("creator_uid"),
                             participip));
                 }
+                callBackReadChats.readChats(chatsList);
 
             } catch (SQLException e) {
                 printSQLException(e);
@@ -223,6 +261,63 @@ public class JDBC {
     }
 
     public void listenMessages() {
+
+        Runnable listenTask = () -> {
+            Connection conn = null;
+            PGConnection pgconn = null;
+            try {
+                conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                pgconn = conn.unwrap(PGConnection.class);
+                Statement stmt = conn.createStatement();
+                stmt.execute("LISTEN message_added");
+                stmt.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+
+            try
+            {
+                while (true)
+                {
+                    PGNotification notifications[] = pgconn.getNotifications();
+
+                    // If this thread is the only one that uses the connection, a timeout can be used to
+                    // receive notifications immediately:
+                    // org.postgresql.PGNotification notifications[] = pgconn.getNotifications(10000);
+                    ObjectMapper mapper = new ObjectMapper();
+                    if (notifications != null)
+                    {
+                        for (int i=0; i < notifications.length; i++) {
+                            Log.d("LISTENPOSTGRES","Got notification: " + notifications[i].getParameter());
+                            Message msg = mapper.readValue(notifications[i].getParameter(),
+                                    Message.class);
+                            callBackListenMsg.beginListen(msg);
+                        }
+
+                    }
+
+                    // wait a while before checking again for new
+                    // notifications
+
+                    Thread.sleep(500);
+                }
+            }
+            catch (SQLException sqle)
+            {
+                sqle.printStackTrace();
+            }
+            catch (InterruptedException ie)
+            {
+                ie.printStackTrace();
+            } catch (JsonMappingException e) {
+                e.printStackTrace();
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        };
+
+        Thread thread = new Thread(listenTask);
+        thread.start();
 
     }
 
