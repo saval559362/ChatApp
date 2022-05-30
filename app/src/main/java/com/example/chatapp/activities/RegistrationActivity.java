@@ -54,8 +54,8 @@ public class RegistrationActivity extends AppCompatActivity implements JDBC.Call
         SharedPreferences sPref =
                 getSharedPreferences(String.valueOf(R.string.app_settings), MODE_PRIVATE);     //Сохранение текущего пользователя в SharedPreferences
         SharedPreferences.Editor ed = sPref.edit();
-        ed.putString(String.valueOf(R.string.us_email), user.Email);
-        ed.putString(String.valueOf(R.string.us_pass), user.Password);
+        ed.putString(String.valueOf(R.string.us_email), user.Email.replaceAll(" ", ""));
+        ed.putString(String.valueOf(R.string.us_pass), user.Password.replaceAll(" ", ""));
         ed.putString(String.valueOf(R.string.us_uid), user.Uid);
         ed.apply();
 

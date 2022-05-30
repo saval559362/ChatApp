@@ -30,6 +30,7 @@ import com.example.chatapp.models.ChatModel;
 import com.example.chatapp.models.Message;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -133,6 +134,9 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
     public void onChatClick(int position) {
         ChatModel chat = chats.get(position);
         Intent intent = new Intent(getContext(), MainChatView.class);
+        if (Arrays.stream(chat.Participants).count() > 2) {
+            intent.putExtra("partc_count", Arrays.stream(chat.Participants).count());
+        }
         intent.putExtra("chat_id", chat.ChatId);
         startActivity(intent);
     }
@@ -141,6 +145,8 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
     public void readChats(ObservableList<ChatModel> chatList) {
         chats.addAll(chatList);
 
+        chats.sort(Comparator.comparingLong(ChatModel::getLastMessageTime));
+        Collections.reverse(chats);
     }
 
     /*@Override

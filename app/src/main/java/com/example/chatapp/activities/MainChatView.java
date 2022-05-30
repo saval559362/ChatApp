@@ -46,6 +46,10 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
     private MessageAdapter msgAdapter;
 
     private String usUid;
+    private String usReceiver = "null";
+    private int partcCount = 0;
+
+    private final JDBC msgControl = new JDBC();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,7 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
         messages.setLayoutManager(linearLayoutManager);
         messages.setHasFixedSize(true);
 
+        partcCount = getIntent().getExtras().getInt("partc_count");
         int chatId = getIntent().getExtras().getInt("chat_id");
 
         SharedPreferences sPref =
@@ -105,7 +110,11 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
             public void onClick(View view) {
                 long time = new Date().getTime();
 
-                //TODO запись нового сообщения в базу
+                Message msg = new Message(chatId, usUid, usReceiver, messageText.getText().toString(), time);
+                msgControl.insertMessage(msg);
+                msgControl.updateChat(chatId, messageText.getText().toString(), time);
+
+                messageText.setText("");
             }
         });
     }
@@ -113,12 +122,12 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
     //EventListener для считывания сообщений
     private void readMessages(int chatId){
 
-        JDBC readMsg = new JDBC();
-        readMsg.registerCallBackReadMessages(this);
-        readMsg.readMessages(chatId, usUid);
 
-        readMsg.registerCallBackListenMsg(this);
-        readMsg.listenMessages();
+        msgControl.registerCallBackReadMessages(this);
+        msgControl.readMessages(chatId, usUid);
+
+        msgControl.registerCallBackListenMsg(this);
+        msgControl.listenMessages(chatId);
     }
 
     @Override
@@ -129,14 +138,23 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
     }
 
     @Override
-    public void readMsg(List<Message> messages) {
-        messagesList.addAll(messages);
+    public void readMsg(List<Message> msgs) {
+        messagesList.addAll(msgs);
+
+        for (Message msg: messagesList) {
+            if (!msg.getReceiver().equals(usUid) && usReceiver.equals("null")) {
+                usReceiver = msg.getReceiver();
+                break;
+            }
+        }
+        messages.smoothScrollToPosition(messagesList.size() - 1);
     }
 
     @Override
     public void beginListen(Message msg) {
         messagesList.add(msg);
 
+        messages.smoothScrollToPosition(messagesList.size() - 1);
     }
 }
 

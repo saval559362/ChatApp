@@ -11,7 +11,8 @@
         android:id="@+id/user_email_in"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"/>
+        android:hint="Email"
+        android:inputType="textEmailAddress"/>
     <EditText
         android:id="@+id/user_pass_in"
         android:layout_width="match_parent"

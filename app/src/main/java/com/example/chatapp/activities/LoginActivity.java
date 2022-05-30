@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,7 +44,9 @@ public class LoginActivity extends AppCompatActivity implements JDBC.CallBackLog
         singIn.setOnClickListener(view -> {
             String endEmail = String.valueOf(userEmail.getText());
             String endPass = String.valueOf(userPass.getText());
-
+            endEmail.replaceAll(" ", "");
+            endPass.replaceAll(" ", "");
+            
             signIn(endEmail, endPass);
 
             });

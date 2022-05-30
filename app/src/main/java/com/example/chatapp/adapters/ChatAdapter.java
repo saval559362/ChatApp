@@ -47,7 +47,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     public void onBindViewHolder(@NonNull ChatAdapter.ChatViewHolder holder, int position) {
         ChatModel chat = chats.get(position);
 
-        long time = 0;
+        long time = chat.getLastMessageTime();
         Date messageDate = new Date(time);
         Date todayDate = new Date(new Date().getTime());
 
@@ -61,7 +61,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         }
 
         holder.setChatName(chat.getName());
-        //holder.setChatLastMsg(chat.getLastMessage());
+        holder.setChatLastMsg(chat.getLastMessage());
         holder.setChatLastMsgTime(dateForCht.format(messageDate));
 
         //TODO подсчет непрочитанных сообщений\ Переделать адаптер

@@ -30,7 +30,15 @@ public class Message {
         Isseen = isseen;
     }
 
-    public Message() {
+    public Message(int chatId, String sender, String receiver, String textMessage, long msgTime) {
+        ChatId = chatId;
+        Sender = sender;
+        Receiver = receiver;
+        MessageText = textMessage;
+        DateCreate = msgTime;
+    }
+
+    public Message(){
 
     }
 
@@ -78,6 +86,14 @@ public class Message {
 
     public void setMessageId(int messageId) {
         MessageId = messageId;
+    }
+
+    public int getChatId() {
+        return ChatId;
+    }
+
+    public void setChatId(int chatId) {
+        ChatId = chatId;
     }
 
 }

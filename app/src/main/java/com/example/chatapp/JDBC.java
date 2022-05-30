@@ -212,11 +212,37 @@ public class JDBC {
                             rs.getString("sender"),
                             rs.getString("receiver"),
                             rs.getString("content"),
-                            rs.getInt("date_create"),
+                            (Long) rs.getObject("date_create"),
                             rs.getBoolean("is_seen")));
 
                 }
                 callBackReadMessages.readMsg(messageList);
+            } catch (SQLException e) {
+                printSQLException(e);
+            }
+
+        };
+
+        Thread thread = new Thread(taskRead);
+        thread.start();
+    }
+
+    public void insertMessage(Message msg) {
+        Runnable taskRead = () -> {
+            String getQuery = "insert into messages(chat_id, sender, receiver, content, date_create)" +
+                    "values(?,?,?,?,?)";
+            // Step 1: Establishing a Connection
+            try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+                 // Step 2:Create a statement using connection object
+                 PreparedStatement preparedStatement = connection.prepareStatement(getQuery)) {
+                // Step 3: Execute the query or update query
+                preparedStatement.setInt(1, msg.getChatId());
+                preparedStatement.setString(2, msg.getSender());
+                preparedStatement.setString(3, msg.getReceiver());
+                preparedStatement.setString(4, msg.getMessageText());
+                preparedStatement.setObject(5, msg.getDateCreate());
+                preparedStatement.executeUpdate();
+
             } catch (SQLException e) {
                 printSQLException(e);
             }
@@ -247,7 +273,9 @@ public class JDBC {
                     chatsList.add(new ChatModel(rs.getInt("chat_id"),
                             rs.getString("name"),
                             rs.getString("creator_uid"),
-                            participip));
+                            participip,
+                            rs.getString("last_message"),
+                            (Long)rs.getObject("last_message_time")));
                 }
                 callBackReadChats.readChats(chatsList);
 
@@ -260,7 +288,31 @@ public class JDBC {
 
     }
 
-    public void listenMessages() {
+    public void updateChat(int chatId, String message, long time) {
+        Runnable taskRead = () -> {
+            String setQuery = "update chats set last_message='"+message+"', last_message_time="+time +
+                    " where chat_id=" + chatId;
+            ObservableList<ChatModel> chatsList = new ObservableArrayList<>();
+            // Step 1: Establishing a Connection
+            try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+                 // Step 2:Create a statement using connection object
+                 PreparedStatement preparedStatement = connection.prepareStatement(setQuery)) {
+                //preparedStatement.setString(1, usUId);
+                // Step 3: Execute the query or update query
+                preparedStatement.executeUpdate();
+
+                // Step 4: Process the ResultSet object.
+
+
+            } catch (SQLException e) {
+                printSQLException(e);
+            }
+        };
+        Thread thread = new Thread(taskRead);
+        thread.start();
+    }
+
+    public void listenMessages(int chatId) {
 
         Runnable listenTask = () -> {
             Connection conn = null;
@@ -269,7 +321,7 @@ public class JDBC {
                 conn = DriverManager.getConnection(DB_URL, USER, PASS);
                 pgconn = conn.unwrap(PGConnection.class);
                 Statement stmt = conn.createStatement();
-                stmt.execute("LISTEN message_added");
+                stmt.execute("LISTEN message_added_chat_" + chatId);
                 stmt.close();
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
