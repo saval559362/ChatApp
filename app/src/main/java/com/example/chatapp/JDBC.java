@@ -101,6 +101,16 @@ public class JDBC {
         this.callBackListenMsg = callBackListenMsg;
     }
 
+    public interface CallBackUsers {
+        void getUsers(List<User> users);
+    }
+
+    CallBackUsers callBackUsers;
+
+    public void registerCallBackUsers(CallBackUsers callBackUsers) {
+        this.callBackUsers = callBackUsers;
+    }
+
     public void logUser(String email, String pass) {
         Runnable taskLog = () -> {
             String getQuery = "select * from users where email = '" + email +
@@ -193,6 +203,37 @@ public class JDBC {
 
     }
 
+    public void getUsers(String exludedUser) {
+        Runnable taskRead = () -> {
+            String getQuery = "select * from users where user_uid not in ('" + exludedUser + "')";
+            List<User> usersList = new ArrayList<>();
+            // Step 1: Establishing a Connection
+            try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+                 // Step 2:Create a statement using connection object
+                 PreparedStatement preparedStatement = connection.prepareStatement(getQuery)) {
+                // Step 3: Execute the query or update query
+                ResultSet rs = preparedStatement.executeQuery();
+                // Step 4: Process the ResultSet object.
+                while (rs.next()) {
+                    usersList.add(new User(
+                            rs.getString("user_uid"),
+                            rs.getString("login"),
+                            rs.getString("number"),
+                            rs.getString("email"),
+                            "null"));
+
+                }
+                callBackUsers.getUsers(usersList);
+            } catch (SQLException e) {
+                printSQLException(e);
+            }
+
+        };
+
+        Thread thread = new Thread(taskRead);
+        thread.start();
+    }
+
     public void readMessages(int chatId, String usUid) {
         Runnable taskRead = () -> {
             String getQuery = "select * from messages where (sender = '" + usUid +
@@ -264,20 +305,24 @@ public class JDBC {
                 //preparedStatement.setString(1, usUId);
                 // Step 3: Execute the query or update query
                 ResultSet rs = preparedStatement.executeQuery();
+                if (rs != null) {
+                    while (rs.next()) {
+                        Array partc = rs.getArray("participiants");
+                        String[] participip = (String[])partc.getArray();
 
-                // Step 4: Process the ResultSet object.
-                while (rs.next()) {
-                    Array partc = rs.getArray("participiants");
-                    String[] participip = (String[])partc.getArray();
-
-                    chatsList.add(new ChatModel(rs.getInt("chat_id"),
-                            rs.getString("name"),
-                            rs.getString("creator_uid"),
-                            participip,
-                            rs.getString("last_message"),
-                            (Long)rs.getObject("last_message_time")));
+                        chatsList.add(new ChatModel(rs.getInt("chat_id"),
+                                rs.getString("name"),
+                                rs.getString("creator_uid"),
+                                participip,
+                                rs.getString("last_message"),
+                                (Long)rs.getObject("last_message_time")));
+                    }
+                    callBackReadChats.readChats(chatsList);
+                } else {
+                    chatsList = null;
+                    callBackReadChats.readChats(chatsList);
                 }
-                callBackReadChats.readChats(chatsList);
+
 
             } catch (SQLException e) {
                 printSQLException(e);
@@ -286,6 +331,73 @@ public class JDBC {
         Thread thread = new Thread(taskRead);
         thread.start();
 
+    }
+
+    public void findChats(String usUId, String sUsUid) {
+        Runnable taskRead = () -> {
+            String getQuery = "SELECT * FROM chats WHERE '"+ usUId +
+                    "' = ANY(participiants) AND '"+ sUsUid + "' = ANY(participiants)";
+            ObservableList<ChatModel> chatsList = new ObservableArrayList<>();
+            // Step 1: Establishing a Connection
+            try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+                 // Step 2:Create a statement using connection object
+                 PreparedStatement preparedStatement = connection.prepareStatement(getQuery)) {
+                //preparedStatement.setString(1, usUId);
+                // Step 3: Execute the query or update query
+                ResultSet rs = preparedStatement.executeQuery();
+                if (rs != null) {
+                    while (rs.next()) {
+                        Array partc = rs.getArray("participiants");
+                        String[] participip = (String[])partc.getArray();
+
+                        chatsList.add(new ChatModel(rs.getInt("chat_id"),
+                                rs.getString("name"),
+                                rs.getString("creator_uid"),
+                                participip,
+                                rs.getString("last_message"),
+                                (Long)rs.getObject("last_message_time")));
+                    }
+                    callBackReadChats.readChats(chatsList);
+                } else {
+                    chatsList = null;
+                    callBackReadChats.readChats(chatsList);
+                }
+
+
+            } catch (SQLException e) {
+                printSQLException(e);
+            }
+        };
+        Thread thread = new Thread(taskRead);
+        thread.start();
+
+    }
+
+    public void createChat(String userCreator, String userEmployee) {
+        Runnable taskCreate = () -> {
+            String createQuery = "insert into chats(name, creator_uid, participiants)" +
+                    "values (?, ?, ?)";
+            ObservableList<ChatModel> chatsList = new ObservableArrayList<>();
+            // Step 1: Establishing a Connection
+            try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+                 // Step 2:Create a statement using connection object
+                 PreparedStatement preparedStatement = connection.prepareStatement(createQuery)) {
+                preparedStatement.setString(1, "Default");
+                preparedStatement.setString(2, userCreator);
+                String[] partc = {userCreator, userEmployee};
+                preparedStatement.setObject(3, partc);
+                preparedStatement.executeUpdate();
+
+                // Step 4: Process the ResultSet object.
+
+
+            } catch (SQLException e) {
+                printSQLException(e);
+            }
+            findChats(userCreator, userEmployee);
+        };
+        Thread thread = new Thread(taskCreate);
+        thread.start();
     }
 
     public void updateChat(int chatId, String message, long time) {

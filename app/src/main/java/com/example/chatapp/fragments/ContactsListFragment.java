@@ -1,10 +1,14 @@
 package com.example.chatapp.fragments;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableList;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.chatapp.JDBC;
 import com.example.chatapp.R;
 import com.example.chatapp.activities.MainActivity;
 import com.example.chatapp.activities.MainChatView;
@@ -31,14 +36,18 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class ContactsListFragment extends Fragment implements UserAdapter.OnUserListener {
+public class ContactsListFragment extends Fragment implements UserAdapter.OnUserListener, JDBC.CallBackUsers, JDBC.CallBackReadChats {
+
     private RecyclerView usersListRec;
     private UserAdapter usAdapter;
-    private List<User> users;
 
-    private List<ParticipiantsInfo> participiantsInfoList;
+    private ObservableList<User> participiantsInfoList;
 
     private RelativeLayout spinner;
+
+    private JDBC usersControl = new JDBC();
+
+    private String exludedUser;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,11 +66,6 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         usersListRec.setLayoutManager(linearLayoutManager);
         usersListRec.setHasFixedSize(true);
-        /*dbUsers = FirebaseFirestore.getInstance();
-        chtRef = MainActivity.getFirebaseReference();
-        currUsUid = MainActivity.getFirebaseAuth().getCurrentUser().getUid();*/
-        //TODO получение списка контактов
-        participiantsInfoList = new ArrayList<>();
 
         return view;
     }
@@ -69,80 +73,80 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
 
-        users = new ArrayList<>();
-        usAdapter = new UserAdapter(users, this);
+        SharedPreferences spf =
+                getActivity().getSharedPreferences(String.valueOf(R.string.app_settings),
+                        Context.MODE_PRIVATE);
+        exludedUser = spf.getString(String.valueOf(R.string.us_uid), "");
+
+        participiantsInfoList = new ObservableArrayList<>();
+
+        usAdapter = new UserAdapter(participiantsInfoList, this);
         usersListRec.setAdapter(usAdapter);
 
+        participiantsInfoList.addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<User>>() {
+            @Override
+            public void onChanged(ObservableList<User> sender) {
+                usAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onItemRangeChanged(ObservableList<User> sender, int positionStart, int itemCount) {
+                usAdapter.notifyItemRangeChanged(positionStart, itemCount);
+            }
+
+            @Override
+            public void onItemRangeInserted(ObservableList<User> sender, int positionStart, int itemCount) {
+                usAdapter.notifyItemRangeInserted(positionStart, itemCount);
+            }
+
+            @Override
+            public void onItemRangeMoved(ObservableList<User> sender, int fromPosition, int toPosition, int itemCount) {
+                usAdapter.notifyItemMoved(fromPosition, toPosition);
+            }
+
+            @Override
+            public void onItemRangeRemoved(ObservableList<User> sender, int positionStart, int itemCount) {
+                usAdapter.notifyItemRangeRemoved(positionStart, itemCount);
+            }
+        });
+
+        readUsers(exludedUser);
     }
 
-    public void readUsers(){
-        /*dbUsers.collection("users").get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                    for (DocumentSnapshot d : list) {
+    public void readUsers(String exludedUser){
 
-                        String uid = d.getId();
-                        String login = d.get("login", String.class);
-                        String email = d.get("email", String.class);
-                        String number = d.get("number", String.class);
-
-                        if (!uid.equals(currUsUid)) {
-                            users.add(new User(uid, login, number, email));
-                        }
-                    }
-
-                    usAdapter.notifyDataSetChanged();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                });*/
-        //TODO Считывание контактов пользователя
+        usersControl.registerCallBackUsers(this);
+        usersControl.getUsers(exludedUser);
     }
-    private boolean usersExist = false;
-
+    private User user;
     @Override
     public void onUserClick(int position) {
-        /*User currUser = users.get(position);
-        String ref = "";
 
-        for (ParticipiantsInfo part : participiantsInfoList) {
-
-            if (part.Uids.containsAll(Arrays.asList(currUsUid, currUser.Uid))) {
-                usersExist = true;
-                ref = part.DatabaseRef;
-                break;
-            }
-        }
-
-
-        Intent intent = new Intent(getContext(), MainChatView.class);
-
-        if (usersExist) {
-            ref += "/messages";
-            intent.putExtra("msgRef", ref);
-            intent.putExtra("receiver", currUser.Uid);
-            startActivity(intent);
-            Log.d("USERCLICK", "Chat exist " + ref);
-
-        } else {
-            String chRef = UUID.randomUUID().toString().replace('-','f');
-
-            chtRef.child(chRef).child("chatName").setValue(currUser.Name + "'s chat");
-            chtRef.child(chRef).child("lastMessage").setValue("");
-            List<String> parts = Arrays.asList(currUsUid, currUser.Uid);
-            chtRef.child(chRef).child("paricipiants").setValue(parts);
-
-            ref += chtRef.child(chRef) + "/messages";
-
-            intent.putExtra("msgRef", ref);
-            intent.putExtra("receiver", currUser.Uid);
-            startActivity(intent);
-            Log.d("USERCLICK", "Chat don't exist");
-        }
-
-        usersExist = false;
-        ref = "";*/
+        user = participiantsInfoList.get(position);
+        usersControl.registerCallBackReadChats(this);
+        usersControl.findChats(exludedUser, user.Uid);
         //TODO реализация логики создания чата, если такого нет, при клике на пользователя
 
+    }
+
+    @Override
+    public void getUsers(List<User> users) {
+        participiantsInfoList.addAll(users);
+    }
+
+    @Override
+    public void readChats(ObservableList<ChatModel> chatList) {
+        if (chatList.size() != 0) {
+            getActivity().runOnUiThread(() -> {
+                Intent intent = new Intent(getContext(),MainChatView.class);
+                if (Arrays.stream(chatList.get(0).Participants).count() > 2) {
+                    intent.putExtra("partc_count", Arrays.stream(chatList.get(0).Participants).count());
+                }
+                intent.putExtra("chat_id", chatList.get(0).ChatId);
+                startActivity(intent);
+            });
+        } else {
+            usersControl.createChat(exludedUser, user.Uid);
+        }
     }
 }

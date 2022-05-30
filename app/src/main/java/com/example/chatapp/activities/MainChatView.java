@@ -147,7 +147,12 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
                 break;
             }
         }
-        messages.smoothScrollToPosition(messagesList.size() - 1);
+        if (messagesList.size() == 0) {
+            messages.smoothScrollToPosition(messagesList.size());
+        } else {
+            messages.smoothScrollToPosition(messagesList.size() - 1);
+        }
+
     }
 
     @Override

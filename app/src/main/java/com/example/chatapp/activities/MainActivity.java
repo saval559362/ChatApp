@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -91,10 +92,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_log_out) {
-            //FirebaseAuth.getInstance().signOut();
-            //TODO реализация logout пользователя
+            SharedPreferences sPref =
+                    getSharedPreferences(String.valueOf(R.string.app_settings), MODE_PRIVATE);
+            SharedPreferences.Editor ed = sPref.edit();
+            ed.remove(String.valueOf(R.string.us_uid));
+            ed.remove(String.valueOf(R.string.us_email));
+            ed.remove(String.valueOf(R.string.us_pass));
+            ed.commit();
+
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
+
+            this.finish();
         }
         return true;
     }

@@ -15,7 +15,6 @@ public class User {
         Number = number;
         Email = email;
         Password = password;
-
     }
 
     public User(){

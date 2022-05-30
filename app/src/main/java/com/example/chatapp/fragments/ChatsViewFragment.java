@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.chatapp.JDBC;
 import com.example.chatapp.R;
@@ -125,11 +126,6 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
 
     }
 
-    private void readChatsChanges() {
-
-        //TODO разичные изменения чата
-    }
-
     @Override
     public void onChatClick(int position) {
         ChatModel chat = chats.get(position);
@@ -143,15 +139,15 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
 
     @Override
     public void readChats(ObservableList<ChatModel> chatList) {
-        chats.addAll(chatList);
+        if (chatList != null) {
+            chats.addAll(chatList);
 
-        chats.sort(Comparator.comparingLong(ChatModel::getLastMessageTime));
-        Collections.reverse(chats);
+            chats.sort(Comparator.comparingLong(ChatModel::getLastMessageTime));
+            Collections.reverse(chats);
+        } else {
+            Toast.makeText(getActivity(), "Nothing!", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
-    /*@Override
-    public void onPause() {
-        super.onPause();
-        //chtRef.removeEventListener(chtRefListener);
-    }*/
 }
