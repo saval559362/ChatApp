@@ -66,8 +66,6 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
         chatsListRecycler.setLayoutManager(linearLayoutManager);
         chatsListRecycler.setHasFixedSize(true);
 
-        //TODO получение текущего пользователя и списка чатов, где он участник
-
         SharedPreferences sPref =
                 getActivity().getSharedPreferences(String.valueOf(R.string.app_settings), Context.MODE_PRIVATE);
         String usUid = sPref.getString(String.valueOf(R.string.us_uid), "");

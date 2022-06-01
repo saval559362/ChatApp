@@ -46,7 +46,7 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
     private MessageAdapter msgAdapter;
 
     private String usUid;
-    private String usReceiver = "null";
+    private String usReceiver;
     private int partcCount = 0;
 
     private final JDBC msgControl = new JDBC();
@@ -66,6 +66,7 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
 
         partcCount = getIntent().getExtras().getInt("partc_count");
         int chatId = getIntent().getExtras().getInt("chat_id");
+        usReceiver = getIntent().getExtras().getString("receiver");
 
         SharedPreferences sPref =
                 getSharedPreferences(String.valueOf(R.string.app_settings), MODE_PRIVATE);
@@ -134,15 +135,16 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
     public void onPause() {
         super.onPause();
 
-        //TODO выгрузка Listener
     }
 
     @Override
     public void readMsg(List<Message> msgs) {
         messagesList.addAll(msgs);
+        List<Message> tempMsg = messagesList;
+        Collections.reverse(tempMsg);
 
-        for (Message msg: messagesList) {
-            if (!msg.getReceiver().equals(usUid) && usReceiver.equals("null")) {
+        for (Message msg: tempMsg) {
+            if (!msg.getReceiver().equals(usUid) && usReceiver == null) {
                 usReceiver = msg.getReceiver();
                 break;
             }

@@ -33,11 +33,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*chatRef = FirebaseDatabase.getInstance().getReference("Chats");
-        userRef = FirebaseAuth.getInstance();*/
-
-        //TODO получение чатов из под залогиненного пользователя
-
         //_nextButt = findViewById(R.id.mainChatButt);
         logOut = findViewById(R.id.action_log_out);
         toolbarMain = findViewById(R.id.toolbarMain);

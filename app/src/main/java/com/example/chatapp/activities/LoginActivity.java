@@ -72,12 +72,8 @@ public class LoginActivity extends AppCompatActivity implements JDBC.CallBackLog
             Toast.makeText(this, "You already sign in!", Toast.LENGTH_SHORT).show();
         }
 
-
-        //TODO Проверка логина пользователя
     }
 
-
-    //TODO обработка непрвильного логина или пароля
     private void signIn(String email, String password) {
         JDBC logAct = new JDBC();
         logAct.registerCallback(this);
@@ -89,7 +85,6 @@ public class LoginActivity extends AppCompatActivity implements JDBC.CallBackLog
         ed.putString(String.valueOf(R.string.us_email), email);
         ed.putString(String.valueOf(R.string.us_pass), password);
         ed.apply();
-        //TODO Вход в систему
     }
 
 

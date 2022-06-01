@@ -125,7 +125,6 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
         user = participiantsInfoList.get(position);
         usersControl.registerCallBackReadChats(this);
         usersControl.findChats(exludedUser, user.Uid);
-        //TODO реализация логики создания чата, если такого нет, при клике на пользователя
 
     }
 
@@ -143,6 +142,7 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
                     intent.putExtra("partc_count", Arrays.stream(chatList.get(0).Participants).count());
                 }
                 intent.putExtra("chat_id", chatList.get(0).ChatId);
+                intent.putExtra("receiver", user.Uid);
                 startActivity(intent);
             });
         } else {
