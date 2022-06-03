@@ -67,13 +67,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         holder.setChatLastMsgTime(dateForCht.format(messageDate));
         if (chat.getIsSeen() == 0) {
             holder.unreadMessageCount.setVisibility(INVISIBLE);
+        } else if(chat.getIsSeen() > 99 ) {
+            holder.setUnreadMessageCount("99+");
+            holder.unreadMessageCount.setVisibility(VISIBLE);
         } else {
-            holder.setUnreadMessageCount(chat.getIsSeen());
+            holder.setUnreadMessageCount(Integer.toString(chat.getIsSeen()));
             holder.unreadMessageCount.setVisibility(VISIBLE);
         }
-
-
-        //TODO запрос по chat_id для считывания непрочитанныъ сообщений
 
     }
 
@@ -125,8 +125,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
         }
 
-        public void setUnreadMessageCount(int count) {
-            unreadMessageCount.setText(Integer.toString(count));
+        public void setUnreadMessageCount(String count) {
+            unreadMessageCount.setText(count);
         }
 
         @Override

@@ -5,12 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.MainChatView">
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/chatToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/purple_700">
-        <include layout="@layout/user_profile_toolbar"/>
+
+        <include
+            android:id="@+id/userProfileInfo"
+            layout="@layout/user_profile_toolbar" />
     </androidx.appcompat.widget.Toolbar>
 
         <androidx.recyclerview.widget.RecyclerView

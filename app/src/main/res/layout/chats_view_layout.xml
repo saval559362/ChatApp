@@ -25,6 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/chatImage"
+        android:layout_toStartOf="@id/chatDateTime"
         android:orientation="vertical"
         android:layout_marginStart="15dp"
         android:layout_centerVertical="true">

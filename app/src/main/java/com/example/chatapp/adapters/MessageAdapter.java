@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chatapp.JDBC;
 import com.example.chatapp.R;
 import com.example.chatapp.models.Message;
 
@@ -25,6 +26,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private int MSG_TYPE_LEFT = 0;
 
     private String usUid;
+
+    private JDBC msgControl = new JDBC();
 
     public MessageAdapter(List<Message> messageList, String usUid){
         msgs = messageList;
@@ -68,6 +71,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         if (msgs.get(position).getSender().equals(usUid)){
             return MSG_TYPE_RIGHT;
         } else {
+            msgControl.setMessagesRead(msgs.get(position).getChatId(), usUid);
+            msgs.get(position).setIsseen(true);
             return MSG_TYPE_LEFT;
         }
     }

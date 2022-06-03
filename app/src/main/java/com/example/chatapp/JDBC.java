@@ -273,6 +273,28 @@ public class JDBC {
         thread.start();
     }
 
+    public void setMessagesRead(int chatId, String usReceiver) {
+        Runnable taskSet = () -> {
+            String setQuery = "update messages set is_seen=true where is_seen=false and chat_id="
+                    + chatId + " and receiver='" + usReceiver + "';";
+            // Step 1: Establishing a Connection
+            try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+                 // Step 2:Create a statement using connection object
+                 PreparedStatement preparedStatement = connection.prepareStatement(setQuery)) {
+                // Step 3: Execute the query or update query
+                preparedStatement.executeUpdate();
+                // Step 4: Process the ResultSet object.
+                ;
+            } catch (SQLException e) {
+                printSQLException(e);
+            }
+
+        };
+
+        Thread thread = new Thread(taskSet);
+        thread.start();
+    }
+
     public void insertMessage(Message msg) {
         Runnable taskRead = () -> {
             String getQuery = "insert into messages(chat_id, sender, receiver, content, date_create)" +
@@ -304,7 +326,8 @@ public class JDBC {
             String getQuery = "select * from chats " +
                     "left join " +
                     "(select (count(is_seen)) as count_not_seen, chat_id from messages where " +
-                    "messages.is_seen = false group by chat_id order by chat_id) count " +
+                    "messages.is_seen = false" +
+                    " and receiver = '"+ usUId + "' group by chat_id order by chat_id) count " +
                     "on count.chat_id = chats.chat_id where '" + usUId +
                     "' = any(participiants);";
             ObservableList<ChatModel> chatsList = new ObservableArrayList<>();

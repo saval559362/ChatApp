@@ -8,6 +8,7 @@ import androidx.databinding.ObservableList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
@@ -23,6 +25,9 @@ import com.example.chatapp.R;
 import com.example.chatapp.adapters.MessageAdapter;
 import com.example.chatapp.models.Message;
 import com.example.chatapp.models.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -44,6 +49,7 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
     private RecyclerView messages;
     private EditText messageText;
     private FloatingActionButton sendMessage;
+    private RelativeLayout userProfileToolbar;
 
     private LinearLayoutManager linearLayoutManager;
 
@@ -56,10 +62,14 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
 
     private final JDBC msgControl = new JDBC();
 
+    private User selectedUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_chat_view);
+
+        userProfileToolbar = findViewById(R.id.userProfileInfo);
 
         userImageToolbar = findViewById(R.id.userImageToolbar);
         userNameToolbar = findViewById(R.id.userNameToolbar);
@@ -130,6 +140,19 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
 
             messageText.setText("");
         });
+
+        userProfileToolbar.setOnClickListener(view -> {
+            Intent intent = new Intent(this, UserProfileActivity.class);
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String user = "";
+            try {
+                user = ow.writeValueAsString(selectedUser);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            intent.putExtra("user_info", user);
+            startActivity(intent);
+        });
     }
 
     //EventListener для считывания сообщений
@@ -158,7 +181,7 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
 
     @Override
     public void getUsers(List<User> users) {
-        User selectedUser = users.get(0);
+        selectedUser = users.get(0);
 
         runOnUiThread(() -> {
             userNameToolbar.setText(selectedUser.Name);

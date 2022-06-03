@@ -131,6 +131,10 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
     @Override
     public void getUsers(List<User> users) {
         participiantsInfoList.addAll(users);
+
+        getActivity().runOnUiThread(() -> {
+            spinner.setVisibility(View.GONE);
+        });
     }
 
     @Override

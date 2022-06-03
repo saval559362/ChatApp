@@ -13,6 +13,7 @@ import androidx.databinding.ObservableList;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Parcelable;
 import android.util.Log;
@@ -46,6 +47,7 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
     private String currUser;
 
     private RelativeLayout loadingSpinner;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private JDBC readData;
 
@@ -64,6 +66,7 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
 
         chatsListRecycler = view.findViewById(R.id.chatsListRec);
         loadingSpinner = view.findViewById(R.id.loadingPanelChat);
+        mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         chatsListRecycler.setLayoutManager(linearLayoutManager);
@@ -118,6 +121,12 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
             }
         });
 
+        mSwipeRefreshLayout.setOnRefreshListener((SwipeRefreshLayout.OnRefreshListener) () -> {
+            mSwipeRefreshLayout.setRefreshing(true);
+            chats.clear();
+            readData.readChats(currUser);
+        });
+
         Log.d("----CHATSVIEWFRAGMENT----", "onViewCreated done");
     }
 
@@ -153,5 +162,20 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
             Toast.makeText(getActivity(), "Nothing!", Toast.LENGTH_SHORT).show();
         }
 
+        getActivity().runOnUiThread(() -> {
+            loadingSpinner.setVisibility(View.GONE);
+
+            if(mSwipeRefreshLayout.isRefreshing())
+                mSwipeRefreshLayout.setRefreshing(false);
+        });
+
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        //chats.clear();
+
+        //readData.readChats(currUser);
     }
 }
