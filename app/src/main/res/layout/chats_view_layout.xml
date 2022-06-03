@@ -6,7 +6,11 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="10dp"
-    android:background="@drawable/back_border">
+    android:background="@drawable/back_border"
+
+    android:focusable="true"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground" >
 
     <ImageView
         android:id="@+id/chatImage"
@@ -51,9 +55,9 @@
         android:layout_below="@+id/chatDateTime"
         android:layout_alignParentEnd="true"
         android:scaleType="centerInside"
-        android:text="10"
+        android:text="99+"
         android:background="@drawable/circle"
-        android:gravity="center"/>
+        android:gravity="center" />
 
     <TextView
         android:id="@+id/chatDateTime"

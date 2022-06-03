@@ -203,9 +203,15 @@ public class JDBC {
 
     }
 
-    public void getUsers(String exludedUser) {
+    public void getUsers(String userUid, boolean exlude) {
         Runnable taskRead = () -> {
-            String getQuery = "select * from users where user_uid not in ('" + exludedUser + "')";
+            String getQuery = "";
+            if (exlude) {
+                getQuery = "select * from users where user_uid not in ('" + userUid + "')";
+            } else {
+                getQuery = "select * from users where user_uid ='" + userUid + "'";
+            }
+
             List<User> usersList = new ArrayList<>();
             // Step 1: Establishing a Connection
             try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -221,7 +227,6 @@ public class JDBC {
                             rs.getString("number"),
                             rs.getString("email"),
                             "null"));
-
                 }
                 callBackUsers.getUsers(usersList);
             } catch (SQLException e) {
@@ -296,7 +301,12 @@ public class JDBC {
 
     public void readChats(String usUId) {
         Runnable taskRead = () -> {
-            String getQuery = "SELECT * FROM chats WHERE '"+ usUId + "' = ANY(participiants)";
+            String getQuery = "select * from chats " +
+                    "left join " +
+                    "(select (count(is_seen)) as count_not_seen, chat_id from messages where " +
+                    "messages.is_seen = false group by chat_id order by chat_id) count " +
+                    "on count.chat_id = chats.chat_id where '" + usUId +
+                    "' = any(participiants);";
             ObservableList<ChatModel> chatsList = new ObservableArrayList<>();
             // Step 1: Establishing a Connection
             try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -315,7 +325,8 @@ public class JDBC {
                                 rs.getString("creator_uid"),
                                 participip,
                                 rs.getString("last_message"),
-                                (Long)rs.getObject("last_message_time")));
+                                (Long)rs.getObject("last_message_time"),
+                                rs.getInt("count_not_seen")));
                     }
                     callBackReadChats.readChats(chatsList);
                 } else {
@@ -355,7 +366,8 @@ public class JDBC {
                                 rs.getString("creator_uid"),
                                 participip,
                                 rs.getString("last_message"),
-                                (Long)rs.getObject("last_message_time")));
+                                (Long)rs.getObject("last_message_time"),
+                                0));
                     }
                     callBackReadChats.readChats(chatsList);
                 } else {

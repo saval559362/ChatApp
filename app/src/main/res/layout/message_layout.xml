@@ -8,7 +8,7 @@
     android:padding="10dp"
     android:gravity="left">
 
-    <View
+    <!--<View
         android:id="@+id/avatar"
         android:layout_alignParentStart="true"
         android:scaleType="centerInside"
@@ -24,14 +24,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="4dp"
-        android:text="Rose"/>
+        android:text="Rose"/>-->
 
     <TextView
         android:id="@+id/userMessageText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/userName"
-        android:layout_alignStart="@+id/userName"
         android:background="@drawable/their_message"
         android:paddingVertical="12dp"
         android:paddingHorizontal="16dp"

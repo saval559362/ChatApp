@@ -116,7 +116,7 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
     public void readUsers(String exludedUser){
 
         usersControl.registerCallBackUsers(this);
-        usersControl.getUsers(exludedUser);
+        usersControl.getUsers(exludedUser, true);
     }
     private User user;
     @Override

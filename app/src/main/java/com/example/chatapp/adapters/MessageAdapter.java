@@ -96,7 +96,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         }
 
         public void bindMessage(Message msg){
-            usName.setText(msg.getSender());
+            //usName.setText(msg.getSender());
             usMsg.setText(msg.getMessageText());
         }
     }

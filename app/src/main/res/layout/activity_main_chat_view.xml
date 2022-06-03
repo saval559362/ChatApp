@@ -9,7 +9,9 @@
         android:id="@+id/chatToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/purple_700"/>
+        android:background="@color/purple_700">
+        <include layout="@layout/user_profile_toolbar"/>
+    </androidx.appcompat.widget.Toolbar>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listMessages"

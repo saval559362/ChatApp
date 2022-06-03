@@ -29,6 +29,7 @@ import com.example.chatapp.activities.MainChatView;
 import com.example.chatapp.adapters.ChatAdapter;
 import com.example.chatapp.models.ChatModel;
 import com.example.chatapp.models.Message;
+import com.example.chatapp.models.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +38,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatListener, JDBC.CallBackReadChats {
+public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatListener, JDBC.CallBackReadChats{
 
     private RecyclerView chatsListRecycler;
     private ChatAdapter chtAdapter;
@@ -47,6 +48,8 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
     private RelativeLayout loadingSpinner;
 
     private JDBC readData;
+
+    private User selectedUser;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,11 +71,11 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
 
         SharedPreferences sPref =
                 getActivity().getSharedPreferences(String.valueOf(R.string.app_settings), Context.MODE_PRIVATE);
-        String usUid = sPref.getString(String.valueOf(R.string.us_uid), "");
+        currUser = sPref.getString(String.valueOf(R.string.us_uid), "");
 
         readData = new JDBC();
         readData.registerCallBackReadChats(this);
-        readData.readChats(usUid);
+        readData.readChats(currUser);
 
         return view;
     }
@@ -115,21 +118,26 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
             }
         });
 
-        readChats();
         Log.d("----CHATSVIEWFRAGMENT----", "onViewCreated done");
-    }
-
-    public void readChats(){
-
-
     }
 
     @Override
     public void onChatClick(int position) {
+
         ChatModel chat = chats.get(position);
         Intent intent = new Intent(getContext(), MainChatView.class);
+
         if (Arrays.stream(chat.Participants).count() > 2) {
             intent.putExtra("partc_count", Arrays.stream(chat.Participants).count());
+            intent.putExtra("receiver", "all");
+        } else {
+            if (chat.Participants[0].equals(currUser)) {
+                intent.putExtra("receiver", chat.Participants[1]);
+                //readData.getUsers(chat.Participants[1], false);
+            } else {
+                intent.putExtra("receiver", chat.Participants[0]);
+                //readData.getUsers(chat.Participants[0], false);
+            }
         }
         intent.putExtra("chat_id", chat.ChatId);
         startActivity(intent);
@@ -139,7 +147,6 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
     public void readChats(ObservableList<ChatModel> chatList) {
         if (chatList != null) {
             chats.addAll(chatList);
-
             chats.sort(Comparator.comparingLong(ChatModel::getLastMessageTime));
             Collections.reverse(chats);
         } else {
@@ -147,5 +154,4 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
         }
 
     }
-
 }

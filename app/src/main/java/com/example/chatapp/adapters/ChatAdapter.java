@@ -1,6 +1,8 @@
 package com.example.chatapp.adapters;
 
 
+import static android.view.View.*;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,8 +65,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         holder.setChatName(chat.getName());
         holder.setChatLastMsg(chat.getLastMessage());
         holder.setChatLastMsgTime(dateForCht.format(messageDate));
+        if (chat.getIsSeen() == 0) {
+            holder.unreadMessageCount.setVisibility(INVISIBLE);
+        } else {
+            holder.setUnreadMessageCount(chat.getIsSeen());
+            holder.unreadMessageCount.setVisibility(VISIBLE);
+        }
 
-        //TODO подсчет непрочитанных сообщений\ Переделать адаптер
+
+        //TODO запрос по chat_id для считывания непрочитанныъ сообщений
 
     }
 
@@ -74,7 +83,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     }
 
     public class ChatViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnLongClickListener{
+            implements OnClickListener, OnLongClickListener{
 
         public RelativeLayout root;
         public LinearLayout chatInfo;
@@ -117,7 +126,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         }
 
         public void setUnreadMessageCount(int count) {
-            unreadMessageCount.setText(count);
+            unreadMessageCount.setText(Integer.toString(count));
         }
 
         @Override

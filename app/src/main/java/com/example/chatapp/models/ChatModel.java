@@ -13,16 +13,18 @@ public class ChatModel {
     public String[] Participants;
     public String LastMessage;
     public long LastMessageTime;
+    public int IsSeen;
 
 
     public ChatModel(int chatId, String name, String creatorUid, String[] participants,
-                     String lastMessage, long lastMessageTime) {
+                     String lastMessage, long lastMessageTime, int isSeen) {
         ChatId = chatId;
         Name = name;
         CreatorUid = creatorUid;
         Participants = participants;
         LastMessage = lastMessage;
         LastMessageTime = lastMessageTime;
+        IsSeen = isSeen;
     }
 
     public ChatModel() {
@@ -75,6 +77,14 @@ public class ChatModel {
 
     public void setLastMessageTime(long lastMessageTime) {
         LastMessageTime = lastMessageTime;
+    }
+
+    public int getIsSeen() {
+        return IsSeen;
+    }
+
+    public void setIsSeen(int isSeen) {
+        IsSeen = isSeen;
     }
 
 }

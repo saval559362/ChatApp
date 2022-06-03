@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.UserProfileActivity">
+
+    <ImageView
+        android:id="@+id/userProfileAvatar"
+        android:scaleType="fitXY"
+        android:background="@drawable/circle"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"/>
+
+    <TextView
+        android:id="@+id/userProfileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/userProfileAvatar"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:textSize="20sp"
+        android:text="TestName" />
+    <TextView
+        android:id="@+id/userProfileEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/userProfileName"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:text="TestEmail@example.com" />
+
+    <Button
+        android:id="@+id/openUserChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/userProfileEmail"
+        android:layout_centerHorizontal="true"
+        android:textSize="10dp"
+        android:text="Send message"/>
+
+</RelativeLayout>

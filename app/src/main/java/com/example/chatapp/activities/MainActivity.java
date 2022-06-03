@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        setSupportActionBar(toolbarMain);
+        setSupportActionBar(toolbarMain);       //TODO на 12 android вылетает
 
     }
 

@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 
 import com.example.chatapp.JDBC;
@@ -34,8 +36,11 @@ import java.util.Map;
 import java.util.UUID;
 
 
-public class MainChatView extends AppCompatActivity implements JDBC.CallBackReadMessages, JDBC.CallBackListenMsg{
+public class MainChatView extends AppCompatActivity implements JDBC.CallBackReadMessages,
+        JDBC.CallBackListenMsg, JDBC.CallBackUsers{
 
+    private ImageView userImageToolbar;
+    private TextView userNameToolbar;
     private RecyclerView messages;
     private EditText messageText;
     private FloatingActionButton sendMessage;
@@ -46,7 +51,7 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
     private MessageAdapter msgAdapter;
 
     private String usUid;
-    private String usReceiver;
+    private String usReceiver = "";
     private int partcCount = 0;
 
     private final JDBC msgControl = new JDBC();
@@ -56,9 +61,16 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_chat_view);
 
+        userImageToolbar = findViewById(R.id.userImageToolbar);
+        userNameToolbar = findViewById(R.id.userNameToolbar);
+
         messages = findViewById(R.id.listMessages);
         sendMessage = findViewById(R.id.sendMessageButt);
         messageText = findViewById(R.id.messageText);
+
+        msgControl.registerCallBackReadMessages(this);
+        msgControl.registerCallBackListenMsg(this);
+        msgControl.registerCallBackUsers(this);
 
         linearLayoutManager = new LinearLayoutManager(this);
         messages.setLayoutManager(linearLayoutManager);
@@ -67,6 +79,9 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
         partcCount = getIntent().getExtras().getInt("partc_count");
         int chatId = getIntent().getExtras().getInt("chat_id");
         usReceiver = getIntent().getExtras().getString("receiver");
+
+        if (partcCount <= 2)
+            msgControl.getUsers(usReceiver, false);
 
         SharedPreferences sPref =
                 getSharedPreferences(String.valueOf(R.string.app_settings), MODE_PRIVATE);
@@ -106,28 +121,20 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
         readMessages(chatId);
 
         //Listener на кнопку для отправки сообщений
-        sendMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                long time = new Date().getTime();
+        sendMessage.setOnClickListener(view -> {
+            long time = new Date().getTime();
 
-                Message msg = new Message(chatId, usUid, usReceiver, messageText.getText().toString(), time);
-                msgControl.insertMessage(msg);
-                msgControl.updateChat(chatId, messageText.getText().toString(), time);
+            Message msg = new Message(chatId, usUid, usReceiver, messageText.getText().toString(), time);
+            msgControl.insertMessage(msg);
+            msgControl.updateChat(chatId, messageText.getText().toString(), time);
 
-                messageText.setText("");
-            }
+            messageText.setText("");
         });
     }
 
     //EventListener для считывания сообщений
     private void readMessages(int chatId){
-
-
-        msgControl.registerCallBackReadMessages(this);
         msgControl.readMessages(chatId, usUid);
-
-        msgControl.registerCallBackListenMsg(this);
         msgControl.listenMessages(chatId);
     }
 
@@ -140,21 +147,6 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
     @Override
     public void readMsg(List<Message> msgs) {
         messagesList.addAll(msgs);
-        List<Message> tempMsg = messagesList;
-        Collections.reverse(tempMsg);
-
-        for (Message msg: tempMsg) {
-            if (!msg.getReceiver().equals(usUid) && usReceiver == null) {
-                usReceiver = msg.getReceiver();
-                break;
-            }
-        }
-        if (messagesList.size() == 0) {
-            messages.smoothScrollToPosition(messagesList.size());
-        } else {
-            messages.smoothScrollToPosition(messagesList.size() - 1);
-        }
-
     }
 
     @Override
@@ -162,6 +154,15 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
         messagesList.add(msg);
 
         messages.smoothScrollToPosition(messagesList.size() - 1);
+    }
+
+    @Override
+    public void getUsers(List<User> users) {
+        User selectedUser = users.get(0);
+
+        runOnUiThread(() -> {
+            userNameToolbar.setText(selectedUser.Name);
+        });
     }
 }
 
