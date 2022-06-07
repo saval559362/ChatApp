@@ -1,19 +1,15 @@
 package com.example.chatapp.adapters;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.chatapp.JDBC;
+import com.example.chatapp.tools.JDBC;
 import com.example.chatapp.R;
 import com.example.chatapp.models.Message;
 

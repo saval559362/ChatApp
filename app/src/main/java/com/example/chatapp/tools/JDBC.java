@@ -1,4 +1,4 @@
-package com.example.chatapp;
+package com.example.chatapp.tools;
 
 import android.app.Application;
 import android.content.SharedPreferences;
@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.postgresql.PGConnection;
 import org.postgresql.PGNotification;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -31,11 +32,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class JDBC {
 
-    final String DB_URL = "jdbc:postgresql://192.168.50.49:5432/testDb";
+    final String DB_URL = "jdbc:postgresql://192.168.137.1:5432/testDb";
     final String USER = "baseAdmin";            //TODO зашифровать и засунуть в SharedPreferences
     final String PASS = "postgresPassword";
 
     private String findedUser;
+
+    private Crypto cr = new Crypto();
 
     public JDBC() {
 
@@ -113,6 +116,8 @@ public class JDBC {
 
     public void logUser(String email, String pass) {
         Runnable taskLog = () -> {
+            email.replace(" ", "");
+            pass.replace(" ", "");
             String getQuery = "select * from users where email = '" + email +
                     "' AND password = '" + pass + "'";
             //Class.forName("org.postgresql.Driver");
@@ -241,6 +246,7 @@ public class JDBC {
 
     public void readMessages(int chatId, String usUid) {
         Runnable taskRead = () -> {
+            String decryption = null;
             String getQuery = "select * from messages where (sender = '" + usUid +
                     "' OR receiver = '" + usUid + "') AND chat_id = " + chatId;
             List<Message> messageList = new ArrayList<>();
@@ -252,19 +258,22 @@ public class JDBC {
                 ResultSet rs = preparedStatement.executeQuery();
                 // Step 4: Process the ResultSet object.
                 while (rs.next()) {
+                    decryption = cr.AESDecryption(rs.getString("content"),
+                            (Long) rs.getObject("date_create"));
                     messageList.add(new Message(
                             rs.getInt("message_id"),
                             rs.getInt("chat_id"),
                             rs.getString("sender"),
                             rs.getString("receiver"),
-                            rs.getString("content"),
+                            decryption,
                             (Long) rs.getObject("date_create"),
                             rs.getBoolean("is_seen")));
-
                 }
                 callBackReadMessages.readMsg(messageList);
             } catch (SQLException e) {
                 printSQLException(e);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
 
         };
@@ -342,12 +351,13 @@ public class JDBC {
                     while (rs.next()) {
                         Array partc = rs.getArray("participiants");
                         String[] participip = (String[])partc.getArray();
-
+                        String decryption = cr.AESDecryption(rs.getString("last_message"),
+                                (Long)rs.getObject("last_message_time"));
                         chatsList.add(new ChatModel(rs.getInt("chat_id"),
                                 rs.getString("name"),
                                 rs.getString("creator_uid"),
                                 participip,
-                                rs.getString("last_message"),
+                                decryption,
                                 (Long)rs.getObject("last_message_time"),
                                 rs.getInt("count_not_seen")));
                     }
@@ -360,6 +370,8 @@ public class JDBC {
 
             } catch (SQLException e) {
                 printSQLException(e);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
         };
         Thread thread = new Thread(taskRead);
@@ -490,6 +502,7 @@ public class JDBC {
                             Log.d("LISTENPOSTGRES","Got notification: " + notifications[i].getParameter());
                             Message msg = mapper.readValue(notifications[i].getParameter(),
                                     Message.class);
+                            msg.setMessageText(cr.AESDecryption(msg.getMessageText(), msg.getDateCreate()));
                             callBackListenMsg.beginListen(msg);
                         }
 
@@ -511,6 +524,8 @@ public class JDBC {
             } catch (JsonMappingException e) {
                 e.printStackTrace();
             } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
         };

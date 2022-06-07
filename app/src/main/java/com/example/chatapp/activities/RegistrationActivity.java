@@ -9,9 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.chatapp.JDBC;
+import com.example.chatapp.tools.JDBC;
 import com.example.chatapp.R;
-import com.example.chatapp.activities.LoginActivity;
 import com.example.chatapp.models.User;
 
 import java.util.UUID;

@@ -1,6 +1,5 @@
 package com.example.chatapp.fragments;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,28 +12,20 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
-import com.example.chatapp.JDBC;
+import com.example.chatapp.tools.JDBC;
 import com.example.chatapp.R;
-import com.example.chatapp.activities.MainActivity;
 import com.example.chatapp.activities.MainChatView;
 import com.example.chatapp.adapters.UserAdapter;
 import com.example.chatapp.models.ChatModel;
-import com.example.chatapp.models.ParticipiantsInfo;
 import com.example.chatapp.models.User;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
 
 public class ContactsListFragment extends Fragment implements UserAdapter.OnUserListener, JDBC.CallBackUsers, JDBC.CallBackReadChats {
 

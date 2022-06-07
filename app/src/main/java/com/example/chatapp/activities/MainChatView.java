@@ -1,7 +1,5 @@
 package com.example.chatapp.activities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
@@ -11,16 +9,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
-import com.example.chatapp.JDBC;
+import com.example.chatapp.tools.Crypto;
+import com.example.chatapp.tools.JDBC;
 import com.example.chatapp.R;
 import com.example.chatapp.adapters.MessageAdapter;
 import com.example.chatapp.models.Message;
@@ -30,15 +26,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 
 public class MainChatView extends AppCompatActivity implements JDBC.CallBackReadMessages,
@@ -133,10 +122,11 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
         //Listener на кнопку для отправки сообщений
         sendMessage.setOnClickListener(view -> {
             long time = new Date().getTime();
-
-            Message msg = new Message(chatId, usUid, usReceiver, messageText.getText().toString(), time);
+            Crypto cr = new Crypto();
+            String encpytion = cr.ASEEncryption(messageText.getText().toString(), time);
+            Message msg = new Message(chatId, usUid, usReceiver, encpytion ,time);
             msgControl.insertMessage(msg);
-            msgControl.updateChat(chatId, messageText.getText().toString(), time);
+            msgControl.updateChat(chatId, encpytion, time);
 
             messageText.setText("");
         });

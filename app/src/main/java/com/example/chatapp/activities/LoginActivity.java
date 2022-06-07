@@ -1,25 +1,17 @@
 package com.example.chatapp.activities;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.InputFilter;
-import android.text.Spanned;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.chatapp.JDBC;
+import com.example.chatapp.tools.JDBC;
 import com.example.chatapp.R;
-import com.example.chatapp.models.User;
-
-import java.util.HashMap;
-import java.util.Objects;
 
 
 public class LoginActivity extends AppCompatActivity implements JDBC.CallBackLogin{
