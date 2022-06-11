@@ -33,7 +33,17 @@ public class RegistrationActivity extends AppCompatActivity implements JDBC.Call
         enReg = findViewById(R.id.endReg);
 
         enReg.setOnClickListener(view -> {
-            registerUser(usEmail.getText().toString());
+            String emCheck = usEmail.getText().toString();
+            String passCheck = usPass.getText().toString();
+
+            if (!emCheck.contains("@") || emCheck.contains(" ") || !emCheck.contains(".")) {
+                Toast.makeText(this, "Неверный email!", Toast.LENGTH_SHORT).show();
+            } else if (passCheck.length() <= 5) {
+                Toast.makeText(this, "Пароль должен быть больше 5 символов!",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                registerUser(usEmail.getText().toString());
+            }
         });
 
     }
@@ -66,7 +76,8 @@ public class RegistrationActivity extends AppCompatActivity implements JDBC.Call
     @Override
     public void checkUs(String email, boolean exist) {
         if (exist) {
-            runOnUiThread(() -> Toast.makeText(this, "User already exist!", Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> Toast.makeText(this,
+                    "Пользователь с таким email уже существует!", Toast.LENGTH_SHORT).show());
             runOnUiThread(RegistrationActivity.this::finish);
         } else {
             String uid = UUID.randomUUID().toString();

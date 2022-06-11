@@ -1,7 +1,5 @@
 package com.example.chatapp.tools;
 
-import android.app.Application;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.databinding.ObservableArrayList;
@@ -11,7 +9,6 @@ import com.example.chatapp.models.ChatModel;
 import com.example.chatapp.models.Message;
 import com.example.chatapp.models.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.postgresql.PGConnection;
@@ -26,7 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -115,12 +111,12 @@ public class JDBC {
     }
 
     public void logUser(String email, String pass) {
+        AtomicReference<String> basePass = new AtomicReference<>();
+        AtomicReference<String> encPass = new AtomicReference<>();
+
         Runnable taskLog = () -> {
             email.replace(" ", "");
-            pass.replace(" ", "");
-            String getQuery = "select * from users where email = '" + email +
-                    "' AND password = '" + pass + "'";
-            //Class.forName("org.postgresql.Driver");
+            String getQuery = "select * from users where email = '" + email + "'";
             // Step 1: Establishing a Connection
             try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
                  // Step 2:Create a statement using connection object
@@ -128,9 +124,15 @@ public class JDBC {
                 // Step 3: Execute the query or update query
                 ResultSet rs = preparedStatement.executeQuery();
                 // Step 4: Process the ResultSet object.
-                while (rs.next()) {
-                    findedUser = rs.getString("user_uid");
+                if (rs != null) {
+                    while (rs.next()) {
+                        findedUser = rs.getString("user_uid");
+
+                        basePass.set(rs.getString("password"));
+                        encPass.set(cr.ASEEncryption(pass, findedUser));
+                    }
                 }
+
                 Log.d("POSTGRES", "Data retrieved!");
 
             } catch (SQLException e) {
@@ -138,7 +140,7 @@ public class JDBC {
                 Log.d("POSTGRES", "Failed retrieve!");
             }
 
-            if (findedUser != null) {
+            if (findedUser != null && basePass.get().equals(encPass.get())) {
                 Log.d("POSTGRES", "User found: " + findedUser);
                 callBack.logUser(true, findedUser);
             } else {
@@ -190,7 +192,8 @@ public class JDBC {
                 preparedStatement.setString(1, user.Uid);
                 preparedStatement.setString(2, user.Email);
                 preparedStatement.setString(3, user.Name);
-                preparedStatement.setString(4, user.Password);
+                String cryptoPass = cr.ASEEncryption(user.Password, user.Uid);
+                preparedStatement.setString(4, cryptoPass);
                 // Step 3: Execute the query or update query
                 preparedStatement.executeUpdate();
 
@@ -259,7 +262,7 @@ public class JDBC {
                 // Step 4: Process the ResultSet object.
                 while (rs.next()) {
                     decryption = cr.AESDecryption(rs.getString("content"),
-                            (Long) rs.getObject("date_create"));
+                           Long.toString((Long) rs.getObject("date_create")));
                     messageList.add(new Message(
                             rs.getInt("message_id"),
                             rs.getInt("chat_id"),
@@ -352,7 +355,7 @@ public class JDBC {
                         Array partc = rs.getArray("participiants");
                         String[] participip = (String[])partc.getArray();
                         String decryption = cr.AESDecryption(rs.getString("last_message"),
-                                (Long)rs.getObject("last_message_time"));
+                                Long.toString((Long)rs.getObject("last_message_time")));
                         chatsList.add(new ChatModel(rs.getInt("chat_id"),
                                 rs.getString("name"),
                                 rs.getString("creator_uid"),
@@ -424,7 +427,6 @@ public class JDBC {
         Runnable taskCreate = () -> {
             String createQuery = "insert into chats(name, creator_uid, participiants)" +
                     "values (?, ?, ?)";
-            ObservableList<ChatModel> chatsList = new ObservableArrayList<>();
             // Step 1: Establishing a Connection
             try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
                  // Step 2:Create a statement using connection object
@@ -434,9 +436,6 @@ public class JDBC {
                 String[] partc = {userCreator, userEmployee};
                 preparedStatement.setObject(3, partc);
                 preparedStatement.executeUpdate();
-
-                // Step 4: Process the ResultSet object.
-
 
             } catch (SQLException e) {
                 printSQLException(e);
@@ -449,9 +448,9 @@ public class JDBC {
 
     public void updateChat(int chatId, String message, long time) {
         Runnable taskRead = () -> {
-            String setQuery = "update chats set last_message='"+message+"', last_message_time="+time +
+            String setQuery = "update chats set last_message='" + message + "', last_message_time="
+                    + time +
                     " where chat_id=" + chatId;
-            ObservableList<ChatModel> chatsList = new ObservableArrayList<>();
             // Step 1: Establishing a Connection
             try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
                  // Step 2:Create a statement using connection object
@@ -459,9 +458,6 @@ public class JDBC {
                 //preparedStatement.setString(1, usUId);
                 // Step 3: Execute the query or update query
                 preparedStatement.executeUpdate();
-
-                // Step 4: Process the ResultSet object.
-
 
             } catch (SQLException e) {
                 printSQLException(e);
@@ -502,7 +498,8 @@ public class JDBC {
                             Log.d("LISTENPOSTGRES","Got notification: " + notifications[i].getParameter());
                             Message msg = mapper.readValue(notifications[i].getParameter(),
                                     Message.class);
-                            msg.setMessageText(cr.AESDecryption(msg.getMessageText(), msg.getDateCreate()));
+                            msg.setMessageText(cr.AESDecryption(msg.getMessageText(),
+                                    Long.toString(msg.getDateCreate())));
                             callBackListenMsg.beginListen(msg);
                         }
 
@@ -513,39 +510,15 @@ public class JDBC {
 
                     Thread.sleep(500);
                 }
-            }
-            catch (SQLException sqle)
+            } catch (SQLException | InterruptedException | JsonProcessingException
+                    | UnsupportedEncodingException sqle)
             {
                 sqle.printStackTrace();
-            }
-            catch (InterruptedException ie)
-            {
-                ie.printStackTrace();
-            } catch (JsonMappingException e) {
-                e.printStackTrace();
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
             }
         };
 
         Thread thread = new Thread(listenTask);
         thread.start();
-
-    }
-
-    public void listenChats() {
-
-    }
-
-
-    public void unlistenMessages() {
-
-    }
-
-    public void unlistenChats() {
-
     }
 
     public void printSQLException(SQLException ex) {

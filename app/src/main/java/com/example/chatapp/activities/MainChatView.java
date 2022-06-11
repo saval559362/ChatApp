@@ -123,7 +123,8 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
         sendMessage.setOnClickListener(view -> {
             long time = new Date().getTime();
             Crypto cr = new Crypto();
-            String encpytion = cr.ASEEncryption(messageText.getText().toString(), time);
+            String encpytion = cr.ASEEncryption(messageText.getText().toString(),
+                    Long.toString(time));
             Message msg = new Message(chatId, usUid, usReceiver, encpytion ,time);
             msgControl.insertMessage(msg);
             msgControl.updateChat(chatId, encpytion, time);
@@ -149,12 +150,6 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
     private void readMessages(int chatId){
         msgControl.readMessages(chatId, usUid);
         msgControl.listenMessages(chatId);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
     }
 
     @Override

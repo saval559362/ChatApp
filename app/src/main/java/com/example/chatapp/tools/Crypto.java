@@ -41,8 +41,8 @@ public class Crypto {
 
     }
 
-    public String ASEEncryption(String string, Long salt) {
-        spec = new PBEKeySpec(password.toCharArray(), Long.toString(salt).getBytes(),
+    public String ASEEncryption(String string, String salt) {
+        spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(),
                 65556, 128);
         try {
             pbeSecretKey = secKeyFactory.generateSecret(spec);
@@ -56,7 +56,7 @@ public class Crypto {
 
         try {
             cipher.init(Cipher.ENCRYPT_MODE, aesSecret, new GCMParameterSpec(128,
-                    Long.toString(salt).getBytes()));
+                    salt.getBytes()));
             encryptedByte = cipher.doFinal(stringByte);
         } catch (InvalidKeyException e) {
             e.printStackTrace();
@@ -75,8 +75,8 @@ public class Crypto {
         return  returnString;
     }
 
-    public String AESDecryption(String string, Long salt) throws UnsupportedEncodingException {
-        spec = new PBEKeySpec(password.toCharArray(), Long.toString(salt).getBytes(),
+    public String AESDecryption(String string, String salt) throws UnsupportedEncodingException {
+        spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(),
                 65556, 128);
         try {
             pbeSecretKey = secKeyFactory.generateSecret(spec);
@@ -92,7 +92,7 @@ public class Crypto {
 
         try {
             decipher.init(cipher.DECRYPT_MODE, aesSecret, new GCMParameterSpec(128,
-                    Long.toString(salt).getBytes()));
+                    salt.getBytes()));
             decryption = decipher.doFinal(encryptedByte);
             decryptedString = new String(decryption);
         } catch (InvalidKeyException e) {

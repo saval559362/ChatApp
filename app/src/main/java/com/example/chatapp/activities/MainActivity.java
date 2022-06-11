@@ -100,15 +100,12 @@ public class MainActivity extends AppCompatActivity {
 
             this.finish();
         }
+
+        if (item.getItemId() == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        }
         return true;
     }
-
-    /*public static DatabaseReference getFirebaseReference() {
-        return chatRef;
-    }
-
-    public static FirebaseAuth getFirebaseAuth() {
-        return userRef;
-    }*/
 
 }
