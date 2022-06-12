@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ChooseActionSettings">
+
+    <RelativeLayout
+        android:id="@+id/blockChangePass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/back_border"
+        android:clickable="true"
+
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/passPic"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/pass_icon" />
+
+        <TextView
+            android:id="@+id/settingsAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@id/passPic"
+            android:text="Сменить пароль"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/blockChangeLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/blockChangePass"
+        android:background="@drawable/back_border"
+        android:clickable="true"
+
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/namePic"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/name_icon" />
+
+        <TextView
+            android:id="@+id/settingsInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@id/namePic"
+            android:text="Сменить логин"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

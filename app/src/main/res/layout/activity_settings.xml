@@ -3,26 +3,94 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/blockProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:background="@drawable/back_border">
         <ImageView
             android:id="@+id/changePhotoProfile"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@drawable/circle" />
+            android:background="@drawable/circle"/>
         <TextView
+            android:id="@+id/settingsUserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/changePhotoProfile"
             android:text="test"
-            android:textSize="20dp"/>
+            android:textSize="24sp"
+            android:layout_marginStart="10dp"/>
         <TextView
+            android:id="@+id/settingsUserEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/settingsUserName"
+            android:layout_toEndOf="@id/changePhotoProfile"
             android:text="test"
-            android:textSize="20dp" />
-    </LinearLayout>
+            android:textSize="18sp"
+            android:layout_marginStart="10dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/blockAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/blockProfile"
+        android:background="@drawable/back_border"
+        android:clickable="true"
+
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/keyPic"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/acc_key" />
+
+        <TextView
+            android:id="@+id/settingsAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@id/keyPic"
+            android:text="Аккаунт"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/blockInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/blockAccount"
+        android:background="@drawable/back_border"
+        android:clickable="true"
+
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/infoPic"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/info_icon" />
+
+        <TextView
+            android:id="@+id/settingsInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@id/infoPic"
+            android:text="Информация"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

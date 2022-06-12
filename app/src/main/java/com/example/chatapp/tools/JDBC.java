@@ -110,6 +110,26 @@ public class JDBC {
         this.callBackUsers = callBackUsers;
     }
 
+    public interface CallBackChangePass {
+        void passChanged();
+    }
+
+    CallBackChangePass callBackChangePass;
+
+    public void registerCallBackChangePass(CallBackChangePass callBackChangePass) {
+        this.callBackChangePass = callBackChangePass;
+    }
+
+    public interface CallBackChangeName {
+        void nameChanged();
+    }
+
+    CallBackChangeName callBackChangeName;
+
+    public void registerCallBackChangeName(CallBackChangeName callBackChangeName) {
+        this.callBackChangeName = callBackChangeName;
+    }
+
     public void logUser(String email, String pass) {
         AtomicReference<String> basePass = new AtomicReference<>();
         AtomicReference<String> encPass = new AtomicReference<>();
@@ -464,6 +484,49 @@ public class JDBC {
             }
         };
         Thread thread = new Thread(taskRead);
+        thread.start();
+    }
+
+    public void changeUserPass(String userUid, String newPass) {
+        Runnable taskChange = () -> {
+            String newEncPass = cr.ASEEncryption(newPass, userUid);
+            String setQuery = "update users set password='" + newEncPass
+                    + "' where user_uid='" + userUid + "'";
+            // Step 1: Establishing a Connection
+            try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+                 // Step 2:Create a statement using connection object
+                 PreparedStatement preparedStatement = connection.prepareStatement(setQuery)) {
+                //preparedStatement.setString(1, usUId);
+                // Step 3: Execute the query or update query
+                preparedStatement.executeUpdate();
+                callBackChangePass.passChanged();
+
+            } catch (SQLException e) {
+                printSQLException(e);
+            }
+        };
+        Thread thread = new Thread(taskChange);
+        thread.start();
+    }
+
+    public void changeUserName(String userUid, String newUserName) {
+        Runnable taskChange = () -> {
+            String setQuery = "update users set login='" + newUserName
+                    + "' where user_uid='" + userUid + "'";
+            // Step 1: Establishing a Connection
+            try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+                 // Step 2:Create a statement using connection object
+                 PreparedStatement preparedStatement = connection.prepareStatement(setQuery)) {
+                //preparedStatement.setString(1, usUId);
+                // Step 3: Execute the query or update query
+                preparedStatement.executeUpdate();
+                callBackChangeName.nameChanged();
+
+            } catch (SQLException e) {
+                printSQLException(e);
+            }
+        };
+        Thread thread = new Thread(taskChange);
         thread.start();
     }
 

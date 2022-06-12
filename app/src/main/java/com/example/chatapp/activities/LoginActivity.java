@@ -89,11 +89,13 @@ public class LoginActivity extends AppCompatActivity implements JDBC.CallBackLog
             ed.putString(String.valueOf(R.string.us_uid), userUid);
             ed.apply();
 
-            runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Auth complete!", Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Auth complete!",
+                    Toast.LENGTH_SHORT).show());
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else {
-            runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Auth fail!", Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Auth fail!",
+                    Toast.LENGTH_SHORT).show());
         }
 
     }

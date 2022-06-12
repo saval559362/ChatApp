@@ -66,6 +66,7 @@ public class RegistrationActivity extends AppCompatActivity implements JDBC.Call
         ed.putString(String.valueOf(R.string.us_email), user.Email.replaceAll(" ", ""));
         ed.putString(String.valueOf(R.string.us_pass), user.Password.replaceAll(" ", ""));
         ed.putString(String.valueOf(R.string.us_uid), user.Uid);
+        ed.putString(String.valueOf(R.string.us_name), user.Name);
         ed.apply();
 
         runOnUiThread(() -> Toast.makeText(this, "Registration complete!", Toast.LENGTH_SHORT).show());

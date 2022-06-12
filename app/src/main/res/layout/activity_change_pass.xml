@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ChangePassActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <EditText
+            android:id="@+id/currentPass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Текущий пароль"
+            android:inputType="textPassword"/>
+        <EditText
+            android:id="@+id/newPass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/currentPass"
+            android:hint="Новый пароль"
+            android:inputType="textPassword"/>
+        <EditText
+            android:id="@+id/newPassEnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/newPass"
+            android:hint="Подтверждение"
+            android:inputType="textPassword"/>
+        <Button
+            android:id="@+id/buttEndChangePass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/newPassEnd"
+            android:text="Применить"/>
+    </RelativeLayout>
+
+</RelativeLayout>

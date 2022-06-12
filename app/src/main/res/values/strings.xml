@@ -120,6 +120,7 @@
     <string name="app_settings">APP_SETTINGS</string>
     <string name="us_uid">USER_UID</string>
     <string name="us_email">USER_EMAIL</string>
+    <string name="us_name">USER_NAME</string>
     <string name="us_pass">USER_PASS</string>
     <string name="title_activity_user_profile">UserProfileActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>

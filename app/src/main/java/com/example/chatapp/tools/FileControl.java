@@ -81,7 +81,6 @@ public class FileControl {
                 ResponseBody respBody = response.body();
                 String fullFileName = response.headers().value(4);
 
-
                 boolean write = writeToDisk(respBody, getterInfo, fullFileName);
             }
 
@@ -175,5 +174,30 @@ public class FileControl {
             return file.substring(file.lastIndexOf(".")+1);
             // в противном случае возвращаем заглушку, то есть расширение не найдено
         else return "";
+    }
+
+    public File getUserFile(String userUid) {
+        File dir = new File(Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                "Users/user_" + userUid);
+        File[] files = dir.listFiles();
+        File profileImage = null;
+        if (files != null) {
+            for (File file : files) {
+                if (file.getName().startsWith(userUid)) {
+                    profileImage = file;
+                }
+            }
+        } else {
+            FileInfo info = new FileInfo("users", userUid, 0);
+            fileDownload(info);
+        }
+
+        if (profileImage == null) {
+            FileInfo info = new FileInfo("users", userUid, 0);
+            fileDownload(info);
+        }
+
+        return profileImage;
     }
 }

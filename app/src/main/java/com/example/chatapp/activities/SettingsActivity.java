@@ -8,18 +8,26 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.chatapp.R;
 import com.example.chatapp.models.FileInfo;
 import com.example.chatapp.tools.FileControl;
 import com.example.chatapp.tools.FilePath;
+
+import java.io.File;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -37,6 +45,12 @@ public class SettingsActivity extends AppCompatActivity {
 
     private FileControl fc;
 
+    private TextView settingsUserName;
+    private TextView settingsUserEmail;
+
+    private RelativeLayout blockAccount;
+    private RelativeLayout blockInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,11 +59,42 @@ public class SettingsActivity extends AppCompatActivity {
         fc = new FileControl();
 
         profilePhoto = findViewById(R.id.changePhotoProfile);
+        settingsUserName = findViewById(R.id.settingsUserName);
+        settingsUserEmail = findViewById(R.id.settingsUserEmail);
+
+        blockAccount = findViewById(R.id.blockAccount);
+        blockInfo = findViewById(R.id.blockInfo);
+
 
         profilePhoto.setOnClickListener(view -> {
             showFileChooser();
         });
+        //Выбор действия с аккаунтом
+        blockAccount.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ChooseActionSettings.class);
+            startActivity(intent);
+        });
+        //Информация о приложении
+        blockInfo.setOnClickListener(view -> {
 
+        });
+
+        SharedPreferences sPref =
+                getSharedPreferences(String.valueOf(R.string.app_settings),
+                        Context.MODE_PRIVATE);
+        String usUid = sPref.getString(String.valueOf(R.string.us_uid), "");
+
+        Uri profImg = null;
+
+        String[] info = new String[2];
+        info[0] = sPref.getString(String.valueOf(R.string.us_name), "");
+        info[1] = sPref.getString(String.valueOf(R.string.us_email), "");
+        if (info[0] != null && info[1] != null) {
+            settingsUserName.setText(info[0]);
+            settingsUserEmail.setText(info[1]);
+        }
+
+        FileControl fc = new FileControl();
         getPictureActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -71,9 +116,8 @@ public class SettingsActivity extends AppCompatActivity {
 
                             new Thread(() -> {
                                 //creating new thread to handle Http Operations
-                                FileInfo fi = new FileInfo("users","123qwe456rty", 0);
-                                //fc.fileUpload(String.valueOf(selectedFilePath), fi);
-                                fc.fileDownload(fi);
+                                FileInfo fi = new FileInfo("users", usUid, 0);
+                                fc.fileUpload(String.valueOf(selectedFilePath), fi);
 
                             }).start();
 
@@ -86,6 +130,17 @@ public class SettingsActivity extends AppCompatActivity {
 
                     }
                 });
+
+        if (fc.getUserFile(usUid) != null) {
+            profImg = Uri.fromFile(fc.getUserFile(usUid));
+        }
+
+        if (profImg != null) {
+            profilePhoto.setImageURI(profImg);
+        } else {
+            Toast.makeText(this, "Установите фото профиля",
+                    Toast.LENGTH_SHORT).show();
+        }
 
     }
 
