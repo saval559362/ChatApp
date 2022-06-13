@@ -1,5 +1,6 @@
 package com.example.chatapp.adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chatapp.models.User;
 import com.example.chatapp.tools.JDBC;
 import com.example.chatapp.R;
 import com.example.chatapp.models.Message;
@@ -20,6 +22,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private List<Message> msgs;
     private int MSG_TYPE_RIGHT = 1;
     private int MSG_TYPE_LEFT = 0;
+    private int MSG_TYPE_LEFT_GROUP = 2;
 
     private String usUid;
 
@@ -36,8 +39,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         if (viewType == MSG_TYPE_RIGHT) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_layout_right, parent, false);
             return new MessageViewHolder(view);
+        } else if (viewType == MSG_TYPE_LEFT_GROUP ) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_layout_group,
+                    parent, false);
+            return new MessageViewHolder(view);
         } else {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_layout, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_layout,
+                    parent, false);
             return new MessageViewHolder(view);
         }
 
@@ -66,7 +74,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     public int getItemViewType(int position) {
         if (msgs.get(position).getSender().equals(usUid)){
             return MSG_TYPE_RIGHT;
-        } else {
+        } else if (msgs.get(position).getReceiver().equals("all")) {
+            return MSG_TYPE_LEFT_GROUP;
+        }
+        else {
             msgControl.setMessagesRead(msgs.get(position).getChatId(), usUid);
             msgs.get(position).setIsseen(true);
             return MSG_TYPE_LEFT;
@@ -78,8 +89,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         return msgs.size();
     }
 
-    public class MessageViewHolder extends RecyclerView.ViewHolder {
+    public class MessageViewHolder extends RecyclerView.ViewHolder{
 
+        public View avatar;
         public RelativeLayout root;
         public TextView usName;
         public TextView usMsg;
@@ -89,6 +101,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         public MessageViewHolder(View itemView) {
             super(itemView);
 
+            avatar = itemView.findViewById(R.id.avatar);
             root = itemView.findViewById(R.id.lineRoot);
             usName = itemView.findViewById(R.id.userName);
             usMsg = itemView.findViewById(R.id.userMessageText);
@@ -99,6 +112,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         public void bindMessage(Message msg){
             //usName.setText(msg.getSender());
             usMsg.setText(msg.getMessageText());
+
+            if (msg.getReceiver().equals("all") && getItemViewType() == MSG_TYPE_LEFT_GROUP) {
+                usName.setText(msg.getSenderName());
+            }
+
         }
     }
 }

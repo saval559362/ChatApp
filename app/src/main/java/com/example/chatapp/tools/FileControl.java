@@ -81,7 +81,7 @@ public class FileControl {
                 ResponseBody respBody = response.body();
                 String fullFileName = response.headers().value(4);
 
-                boolean write = writeToDisk(respBody, getterInfo, fullFileName);
+                writeToDisk(respBody, getterInfo, fullFileName);
             }
 
             @Override

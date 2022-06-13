@@ -129,6 +129,16 @@ public class JDBC {
     public void registerCallBackChangeName(CallBackChangeName callBackChangeName) {
         this.callBackChangeName = callBackChangeName;
     }
+    
+    public interface CallBackCreateGroupChat {
+        void groupCreated();
+    }
+
+    CallBackCreateGroupChat callBackCreateGroupChat;
+
+    public void registerCallBackCreateGroupChat(CallBackCreateGroupChat callBackCreateGroupChat) {
+        this.callBackCreateGroupChat = callBackCreateGroupChat;
+    }
 
     public void logUser(String email, String pass) {
         AtomicReference<String> basePass = new AtomicReference<>();
@@ -270,8 +280,14 @@ public class JDBC {
     public void readMessages(int chatId, String usUid) {
         Runnable taskRead = () -> {
             String decryption = null;
-            String getQuery = "select * from messages where (sender = '" + usUid +
-                    "' OR receiver = '" + usUid + "') AND chat_id = " + chatId;
+            String getQuery = "select * from messages " +
+                    "left join" +
+                    "(select login, user_uid from users ) logs on " +
+                    "messages.sender = logs.user_uid where (messages.sender = '" + usUid + "' " +
+                    "OR messages.receiver = '" + usUid + "' OR receiver='all') AND chat_id = "+
+                    chatId +";";
+                    //"select * from messages where (sender = '" + usUid +
+                    //"' OR receiver = '" + usUid + "' OR receiver='all') AND chat_id = " + chatId;
             List<Message> messageList = new ArrayList<>();
             // Step 1: Establishing a Connection
             try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -290,7 +306,8 @@ public class JDBC {
                             rs.getString("receiver"),
                             decryption,
                             (Long) rs.getObject("date_create"),
-                            rs.getBoolean("is_seen")));
+                            rs.getBoolean("is_seen"),
+                            rs.getString("login")));
                 }
                 callBackReadMessages.readMsg(messageList);
             } catch (SQLException e) {
@@ -374,8 +391,11 @@ public class JDBC {
                     while (rs.next()) {
                         Array partc = rs.getArray("participiants");
                         String[] participip = (String[])partc.getArray();
-                        String decryption = cr.AESDecryption(rs.getString("last_message"),
-                                Long.toString((Long)rs.getObject("last_message_time")));
+                        String decryption = "";
+                        if (rs.getString("last_message") != null) {
+                            decryption = cr.AESDecryption(rs.getString("last_message"),
+                                    Long.toString((Long)rs.getObject("last_message_time")));
+                        }
                         chatsList.add(new ChatModel(rs.getInt("chat_id"),
                                 rs.getString("name"),
                                 rs.getString("creator_uid"),
@@ -461,6 +481,29 @@ public class JDBC {
                 printSQLException(e);
             }
             findChats(userCreator, userEmployee);
+        };
+        Thread thread = new Thread(taskCreate);
+        thread.start();
+    }
+
+    public void createGroupChat(String userCreator, String[] employees, String chatName) {
+        Runnable taskCreate = () -> {
+            String createQuery = "insert into chats(name, creator_uid, participiants)" +
+                    "values (?, ?, ?)";
+            // Step 1: Establishing a Connection
+            try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+                 // Step 2:Create a statement using connection object
+                 PreparedStatement preparedStatement = connection.prepareStatement(createQuery)) {
+                preparedStatement.setString(1, chatName);
+                preparedStatement.setString(2, userCreator);
+                preparedStatement.setObject(3, employees);
+                preparedStatement.executeUpdate();
+
+            } catch (SQLException e) {
+                printSQLException(e);
+            }
+
+            callBackCreateGroupChat.groupCreated();
         };
         Thread thread = new Thread(taskCreate);
         thread.start();

@@ -1,5 +1,6 @@
 package com.example.chatapp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Message {
@@ -18,9 +19,11 @@ public class Message {
     private long DateCreate;
     @JsonProperty("is_seen")
     private boolean Isseen;
+    @JsonIgnore
+    private String senderName;
 
     public Message(int messageId, int chatId, String sender, String receiver, String textMessage,
-                   long msgTime, boolean isseen) {
+                   long msgTime, boolean isseen, String senderName) {
         MessageId = messageId;
         ChatId = chatId;
         Sender = sender;
@@ -28,6 +31,7 @@ public class Message {
         MessageText = textMessage;
         DateCreate = msgTime;
         Isseen = isseen;
+        this.senderName = senderName;
     }
 
     public Message(int chatId, String sender, String receiver, String textMessage, long msgTime) {
@@ -96,4 +100,11 @@ public class Message {
         ChatId = chatId;
     }
 
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
 }

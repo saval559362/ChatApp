@@ -20,12 +20,14 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.chatapp.activities.CreatingGroupChatActivity;
 import com.example.chatapp.tools.JDBC;
 import com.example.chatapp.R;
 import com.example.chatapp.activities.MainChatView;
 import com.example.chatapp.adapters.ChatAdapter;
 import com.example.chatapp.models.ChatModel;
 import com.example.chatapp.models.User;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +37,8 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
 
     private RecyclerView chatsListRecycler;
     private ChatAdapter chtAdapter;
+    private FloatingActionButton createGroupChat;
+
     private ObservableList<ChatModel> chats;
     private String currUser;
 
@@ -59,6 +63,7 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
         chatsListRecycler = view.findViewById(R.id.chatsListRec);
         loadingSpinner = view.findViewById(R.id.loadingPanelChat);
         mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        createGroupChat = view.findViewById(R.id.createGroupChat);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         chatsListRecycler.setLayoutManager(linearLayoutManager);
@@ -119,6 +124,11 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
             readData.readChats(currUser);
         });
 
+        createGroupChat.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getActivity(), CreatingGroupChatActivity.class);
+            startActivity(intent);
+        });
+
         Log.d("----CHATSVIEWFRAGMENT----", "onViewCreated done");
     }
 
@@ -129,8 +139,9 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
         Intent intent = new Intent(getContext(), MainChatView.class);
 
         if (Arrays.stream(chat.Participants).count() > 2) {
-            intent.putExtra("partc_count", Arrays.stream(chat.Participants).count());
+            intent.putExtra("partc_count",chat.Participants.length);
             intent.putExtra("receiver", "all");
+            intent.putExtra("chat_name", chat.Name);
         } else {
             if (chat.Participants[0].equals(currUser)) {
                 intent.putExtra("receiver", chat.Participants[1]);

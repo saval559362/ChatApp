@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/lineRoot"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="10dp"
-    android:gravity="left">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" android:padding="10dp">
 
-    <!--<View
+    <View
         android:id="@+id/avatar"
         android:layout_alignParentStart="true"
         android:scaleType="centerInside"
@@ -25,7 +20,7 @@
         android:layout_toRightOf="@+id/avatar"
         android:layout_alignTop="@+id/avatar"
         android:paddingBottom="4dp"
-        android:text="Rose" />-->
+        android:text="Rose" />
 
     <TextView
         android:id="@+id/userMessageText"
@@ -34,7 +29,8 @@
         android:background="@drawable/their_message"
         android:paddingVertical="12dp"
         android:paddingHorizontal="16dp"
-
+        android:layout_below="@+id/userName"
+        android:layout_alignLeft="@+id/userName"
         android:elevation="2dp"
         android:textSize="18sp"
         android:text="How are you doing? This is a long message that should probably wrap." />
@@ -44,5 +40,4 @@
         android:id="@+id/msgSeen"
         android:layout_below="@id/userMessageText"
         android:visibility="gone"/>
-
 </RelativeLayout>

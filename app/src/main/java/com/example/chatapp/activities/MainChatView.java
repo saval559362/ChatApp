@@ -48,6 +48,7 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
     private String usUid;
     private String usReceiver = "";
     private int partcCount = 0;
+    private String chatName = "";
 
     private final JDBC msgControl = new JDBC();
 
@@ -78,9 +79,7 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
         partcCount = getIntent().getExtras().getInt("partc_count");
         int chatId = getIntent().getExtras().getInt("chat_id");
         usReceiver = getIntent().getExtras().getString("receiver");
-
-        if (partcCount <= 2)
-            msgControl.getUsers(usReceiver, false);
+        chatName = getIntent().getExtras().getString("chat_name");
 
         SharedPreferences sPref =
                 getSharedPreferences(String.valueOf(R.string.app_settings), MODE_PRIVATE);
@@ -117,6 +116,24 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
             }
         });
 
+        if (partcCount > 2) {
+            userNameToolbar.setText(chatName);
+        } else {
+            msgControl.getUsers(usReceiver, false);
+            userProfileToolbar.setOnClickListener(view -> {
+                Intent intent = new Intent(this, UserProfileActivity.class);
+                ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+                String user = "";
+                try {
+                    user = ow.writeValueAsString(selectedUser);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                intent.putExtra("user_info", user);
+                startActivity(intent);
+            });
+        }
+
         readMessages(chatId);
 
         //Listener на кнопку для отправки сообщений
@@ -132,18 +149,6 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
             messageText.setText("");
         });
 
-        userProfileToolbar.setOnClickListener(view -> {
-            Intent intent = new Intent(this, UserProfileActivity.class);
-            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-            String user = "";
-            try {
-                user = ow.writeValueAsString(selectedUser);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-            intent.putExtra("user_info", user);
-            startActivity(intent);
-        });
     }
 
     //EventListener для считывания сообщений
@@ -155,6 +160,8 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
     @Override
     public void readMsg(List<Message> msgs) {
         messagesList.addAll(msgs);
+
+
     }
 
     @Override
@@ -166,11 +173,14 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
 
     @Override
     public void getUsers(List<User> users) {
-        selectedUser = users.get(0);
+        if (users.size() > 0) {
+            selectedUser = users.get(0);
 
-        runOnUiThread(() -> {
-            userNameToolbar.setText(selectedUser.Name);
-        });
+            runOnUiThread(() -> {
+                userNameToolbar.setText(selectedUser.Name);
+            });
+        }
+
     }
 }
 
