@@ -73,7 +73,7 @@ public class ChatsViewFragment extends Fragment implements ChatAdapter.OnChatLis
                 getActivity().getSharedPreferences(String.valueOf(R.string.app_settings), Context.MODE_PRIVATE);
         currUser = sPref.getString(String.valueOf(R.string.us_uid), "");
 
-        readData = new JDBC();
+        readData = new JDBC(getString(R.string.ip_address));
         readData.registerCallBackReadChats(this);
         readData.readChats(currUser);
 

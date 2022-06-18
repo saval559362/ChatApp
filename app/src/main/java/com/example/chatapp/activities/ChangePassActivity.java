@@ -23,7 +23,7 @@ public class ChangePassActivity extends AppCompatActivity implements JDBC.CallBa
     private EditText newPassEnd;
     private Button buttEndChangePass;
 
-    private JDBC changeControl = new JDBC();
+    private JDBC changeControl = new JDBC(getString(R.string.ip_address));
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

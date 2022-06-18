@@ -1,6 +1,8 @@
 package com.example.chatapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,14 +10,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
 import com.example.chatapp.tools.Crypto;
+import com.example.chatapp.tools.FileControl;
 import com.example.chatapp.tools.JDBC;
 import com.example.chatapp.R;
 import com.example.chatapp.adapters.MessageAdapter;
@@ -26,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -39,6 +47,7 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
     private EditText messageText;
     private FloatingActionButton sendMessage;
     private RelativeLayout userProfileToolbar;
+    private ProgressBar spinnerMessageLoad;
 
     private LinearLayoutManager linearLayoutManager;
 
@@ -50,7 +59,7 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
     private int partcCount = 0;
     private String chatName = "";
 
-    private final JDBC msgControl = new JDBC();
+    private JDBC msgControl;
 
     private User selectedUser;
 
@@ -59,6 +68,7 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_chat_view);
 
+        msgControl = new JDBC(getString(R.string.ip_address));
         userProfileToolbar = findViewById(R.id.userProfileInfo);
 
         userImageToolbar = findViewById(R.id.userImageToolbar);
@@ -67,6 +77,8 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
         messages = findViewById(R.id.listMessages);
         sendMessage = findViewById(R.id.sendMessageButt);
         messageText = findViewById(R.id.messageText);
+
+        spinnerMessageLoad = findViewById(R.id.spinnerMessageLoad);
 
         msgControl.registerCallBackReadMessages(this);
         msgControl.registerCallBackListenMsg(this);
@@ -86,7 +98,7 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
         usUid = sPref.getString(String.valueOf(R.string.us_uid), "");
 
         messagesList = new ObservableArrayList<>();
-        msgAdapter = new MessageAdapter(messagesList, usUid);
+        msgAdapter = new MessageAdapter(this, getString(R.string.ip_address), messagesList, usUid);
         messages.setAdapter(msgAdapter);
 
         messagesList.addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Message>>() {
@@ -120,6 +132,12 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
             userNameToolbar.setText(chatName);
         } else {
             msgControl.getUsers(usReceiver, false);
+            FileControl fc = new FileControl();
+            RoundedBitmapDrawable roundImage;
+            if (fc.getUserFile(usReceiver) != null) {
+                roundImage = getRoundImage(fc.getUserFile(usReceiver).getPath());
+                userImageToolbar.setImageDrawable(roundImage);
+            }
             userProfileToolbar.setOnClickListener(view -> {
                 Intent intent = new Intent(this, UserProfileActivity.class);
                 ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -159,15 +177,13 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
 
     @Override
     public void readMsg(List<Message> msgs) {
+        runOnUiThread(() -> spinnerMessageLoad.setVisibility(View.GONE));
         messagesList.addAll(msgs);
-
-
     }
 
     @Override
     public void beginListen(Message msg) {
         messagesList.add(msg);
-
         messages.smoothScrollToPosition(messagesList.size() - 1);
     }
 
@@ -181,6 +197,15 @@ public class MainChatView extends AppCompatActivity implements JDBC.CallBackRead
             });
         }
 
+    }
+
+    private RoundedBitmapDrawable getRoundImage(String filePath){
+        Bitmap batmapBitmap = BitmapFactory.decodeFile(filePath);
+        RoundedBitmapDrawable circularBitmapDrawable =
+                RoundedBitmapDrawableFactory.create(getResources(), batmapBitmap);
+        circularBitmapDrawable.setCircular(true);
+
+        return circularBitmapDrawable;
     }
 }
 

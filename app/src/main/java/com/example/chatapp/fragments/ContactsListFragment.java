@@ -26,6 +26,7 @@ import com.example.chatapp.models.User;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class ContactsListFragment extends Fragment implements UserAdapter.OnUserListener, JDBC.CallBackUsers, JDBC.CallBackReadChats {
 
@@ -36,7 +37,7 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
 
     private RelativeLayout spinner;
 
-    private JDBC usersControl = new JDBC();
+    private JDBC usersControl;
 
     private String exludedUser;
 
@@ -49,6 +50,7 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        usersControl = new JDBC(getString(R.string.ip_address));
         View view = inflater.inflate(R.layout.fragment_contacts_list, container, false);
 
         usersListRec = view.findViewById(R.id.contactsList);
@@ -71,7 +73,7 @@ public class ContactsListFragment extends Fragment implements UserAdapter.OnUser
 
         participiantsInfoList = new ObservableArrayList<>();
 
-        usAdapter = new UserAdapter(participiantsInfoList, this);
+        usAdapter = new UserAdapter(getActivity(),participiantsInfoList, this);
         usersListRec.setAdapter(usAdapter);
 
         participiantsInfoList.addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<User>>() {

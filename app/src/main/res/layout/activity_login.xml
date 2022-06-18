@@ -7,30 +7,36 @@
     android:orientation="vertical"
     android:padding="10dp">
 
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:src="@drawable/chat_icon"/>
+
     <EditText
         android:id="@+id/user_email_in"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"
+        android:hint="Почта"
         android:inputType="textEmailAddress"/>
     <EditText
         android:id="@+id/user_pass_in"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
+        android:hint="Пароль"
         android:inputType="textPassword"/>
     <Button
         android:id="@+id/sign_in_butt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign in"
+        android:text="Войти"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="35dp"/>
     <Button
         android:id="@+id/sign_up_butt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign up"
+        android:text="Регистрация"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="15dp"/>
 

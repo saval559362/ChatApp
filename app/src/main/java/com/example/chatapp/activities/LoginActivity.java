@@ -61,13 +61,13 @@ public class LoginActivity extends AppCompatActivity implements JDBC.CallBackLog
 
         if (usEmail != null && usPass != null) {
             signIn(usEmail, usPass);
-            Toast.makeText(this, "You already sign in!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Вы уж!", Toast.LENGTH_SHORT).show();
         }
 
     }
 
     private void signIn(String email, String password) {
-        JDBC logAct = new JDBC();
+        JDBC logAct = new JDBC(getString(R.string.ip_address));
         logAct.registerCallback(this);
         logAct.logUser(email, password);
 
@@ -89,12 +89,12 @@ public class LoginActivity extends AppCompatActivity implements JDBC.CallBackLog
             ed.putString(String.valueOf(R.string.us_uid), userUid);
             ed.apply();
 
-            runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Auth complete!",
+            runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Авторизация успешна!",
                     Toast.LENGTH_SHORT).show());
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else {
-            runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Auth fail!",
+            runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Авторизация провалена!",
                     Toast.LENGTH_SHORT).show());
         }
 

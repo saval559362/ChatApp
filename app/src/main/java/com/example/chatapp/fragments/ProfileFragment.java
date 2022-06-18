@@ -2,11 +2,15 @@ package com.example.chatapp.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -27,7 +31,10 @@ import com.example.chatapp.tools.JDBC;
 import java.io.File;
 import java.util.List;
 
-public class ProfileFragment extends Fragment implements JDBC.CallBackUsers {
+import de.hdodenhof.circleimageview.CircleImageView;
+
+public class ProfileFragment extends Fragment implements JDBC.CallBackUsers,
+        FileControl.PhotoDownloadCallback {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,7 +55,7 @@ public class ProfileFragment extends Fragment implements JDBC.CallBackUsers {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-
+        fc.registerPhotoCallback(this);
         avatar = view.findViewById(R.id.profileAvatar);
         profName = view.findViewById(R.id.profileName);
         profEmail = view.findViewById(R.id.profileEmail);
@@ -60,23 +67,15 @@ public class ProfileFragment extends Fragment implements JDBC.CallBackUsers {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        RoundedBitmapDrawable roundImage;
         SharedPreferences sPref =
                 getActivity().getSharedPreferences(String.valueOf(R.string.app_settings),
                         Context.MODE_PRIVATE);
         usUid = sPref.getString(String.valueOf(R.string.us_uid), "");
 
-
-
         if (fc.getUserFile(usUid) != null) {
-            profImg[0] = Uri.fromFile(fc.getUserFile(usUid));
-        }
-
-        if (profImg[0] != null) {
-            avatar.setImageURI(profImg[0]);
-        } else {
-            Toast.makeText(getContext(), "Установите фото профиля в настройках",
-                    Toast.LENGTH_SHORT).show();
+            roundImage = getRoundImage(fc.getUserFile(usUid).getPath());
+            avatar.setImageDrawable(roundImage);
         }
 
         refreshProfile.setOnRefreshListener(() -> {
@@ -94,15 +93,16 @@ public class ProfileFragment extends Fragment implements JDBC.CallBackUsers {
 
         });
 
-        JDBC usControl = new JDBC();
+        JDBC usControl = new JDBC(getString(R.string.ip_address));
         usControl.registerCallBackUsers(this);
         usControl.getUsers(usUid, false);
     }
 
     private void updateProfImg() {
+        RoundedBitmapDrawable roundImage;
         if (fc.getUserFile(usUid) != null) {
-            profImg[0] = Uri.fromFile(fc.getUserFile(usUid));
-            avatar.setImageURI(profImg[0]);
+            roundImage = getRoundImage(fc.getUserFile(usUid).getPath());
+            avatar.setImageDrawable(roundImage);
         }
 
         refreshProfile.setRefreshing(false);
@@ -123,5 +123,25 @@ public class ProfileFragment extends Fragment implements JDBC.CallBackUsers {
             ed.putString(String.valueOf(R.string.us_name), us.Name);
             ed.apply();
         });
+    }
+
+    private RoundedBitmapDrawable getRoundImage(String filePath){
+        Bitmap batmapBitmap = BitmapFactory.decodeFile(filePath);
+        RoundedBitmapDrawable circularBitmapDrawable =
+                RoundedBitmapDrawableFactory.create(getResources(), batmapBitmap);
+        circularBitmapDrawable.setCircular(true);
+
+        return circularBitmapDrawable;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateProfImg();
+    }
+
+    @Override
+    public void photoDownloaded() {
+        updateProfImg();
     }
 }

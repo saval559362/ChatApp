@@ -51,7 +51,7 @@ public class RegistrationActivity extends AppCompatActivity implements JDBC.Call
     JDBC reg;
 
     public void registerUser(String email) {
-        reg = new JDBC();
+        reg = new JDBC(getString(R.string.ip_address));
         reg.registerCallBackCheck(this::checkUs);
         reg.registerRegCallback(this::regUser);
         reg.checkUser(email);

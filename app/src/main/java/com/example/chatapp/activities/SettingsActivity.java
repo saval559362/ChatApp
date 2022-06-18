@@ -5,6 +5,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import android.Manifest;
 import android.app.Activity;
@@ -12,6 +14,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -28,6 +32,8 @@ import com.example.chatapp.tools.FileControl;
 import com.example.chatapp.tools.FilePath;
 
 import java.io.File;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -76,7 +82,8 @@ public class SettingsActivity extends AppCompatActivity {
         });
         //Информация о приложении
         blockInfo.setOnClickListener(view -> {
-
+            Intent intent = new Intent(this, InfoActivity.class);
+            startActivity(intent);
         });
 
         SharedPreferences sPref =
@@ -121,7 +128,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                             }).start();
 
-                            profilePhoto.setImageURI(selectedFileUri);
+                            profilePhoto.setImageDrawable(getRoundImage(selectedFilePath));
                             Log.d("UPLOAD_FILE", "Test message after upload begin");
                         }else {
                             Toast.makeText(this,"Cannot upload file to server",
@@ -131,16 +138,7 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 });
 
-        if (fc.getUserFile(usUid) != null) {
-            profImg = Uri.fromFile(fc.getUserFile(usUid));
-        }
-
-        if (profImg != null) {
-            profilePhoto.setImageURI(profImg);
-        } else {
-            Toast.makeText(this, "Установите фото профиля",
-                    Toast.LENGTH_SHORT).show();
-        }
+        updateProfImg(usUid);
 
     }
 
@@ -173,5 +171,20 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
+    private RoundedBitmapDrawable getRoundImage(String filePath){
+        Bitmap batmapBitmap = BitmapFactory.decodeFile(filePath);
+        RoundedBitmapDrawable circularBitmapDrawable =
+                RoundedBitmapDrawableFactory.create(getResources(), batmapBitmap);
+        circularBitmapDrawable.setCircular(true);
 
+        return circularBitmapDrawable;
+    }
+
+    private void updateProfImg(String usUid) {
+        RoundedBitmapDrawable roundImage;
+        if (fc.getUserFile(usUid) != null) {
+            roundImage = getRoundImage(fc.getUserFile(usUid).getPath());
+            profilePhoto.setImageDrawable(roundImage);
+        }
+    }
 }

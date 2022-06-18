@@ -1,5 +1,6 @@
 package com.example.chatapp.tools;
 
+import com.example.chatapp.R;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -11,7 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitApiClient {
 
-    private static final String BASE_URL = "http://192.168.137.1:8000/"; //I used IP of my local machine
+    private static final String BASE_URL = "http://192.168.50.48:8000/";
 
     private static Retrofit retrofit = null;
 

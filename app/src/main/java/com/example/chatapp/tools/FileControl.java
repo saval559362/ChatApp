@@ -28,6 +28,16 @@ import retrofit2.Response;
 
 public class FileControl {
 
+    public interface PhotoDownloadCallback {
+        void photoDownloaded();
+    }
+
+    PhotoDownloadCallback photoDownloadCallback;
+
+    public void registerPhotoCallback(PhotoDownloadCallback photoDownloadCallback) {
+        this.photoDownloadCallback = photoDownloadCallback;
+    }
+
     public void fileUpload(String filePath, FileInfo senderInfo) {
 
         ApiInterface apiInterface = RetrofitApiClient.getClient().create(ApiInterface.class);
@@ -81,7 +91,8 @@ public class FileControl {
                 ResponseBody respBody = response.body();
                 String fullFileName = response.headers().value(4);
 
-                writeToDisk(respBody, getterInfo, fullFileName);
+                if (respBody != null)
+                    writeToDisk(respBody, getterInfo, fullFileName);
             }
 
             @Override
@@ -124,7 +135,6 @@ public class FileControl {
 
             InputStream inputStream = null;
             OutputStream outputStream = null;
-
             try {
                 byte[] fileReader = new byte[4096];
 
@@ -145,7 +155,9 @@ public class FileControl {
 
                     fileSizeDownloaded += read;
 
-                    Log.d("WRITING_ON_DISK", "file download: " + fileSizeDownloaded + " of " + fileSize);
+                    Log.d("WRITING_ON_DISK", "file download: " +
+                            fileSizeDownloaded + " of " + fileSize);
+                    photoDownloadCallback.photoDownloaded();
                 }
 
                 outputStream.flush();
@@ -200,4 +212,6 @@ public class FileControl {
 
         return profileImage;
     }
+
+
 }

@@ -29,13 +29,14 @@ public class CreatingGroupChatActivity extends AppCompatActivity implements
     private MultiAdapterContacts multiAdapter;
 
     private List<User> listUsers = new ArrayList<>();
-    JDBC usersControl = new JDBC();
+    JDBC usersControl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_creating_group_chat);
 
+        usersControl = new JDBC(getString(R.string.ip_address));
         groupChatName = findViewById(R.id.groupChatName);
         selectContacts = findViewById(R.id.selectContacts);
         createGroupChat = findViewById(R.id.createGroupChat);

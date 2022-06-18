@@ -2,9 +2,12 @@ package com.example.chatapp.tools;
 
 import android.util.Log;
 
+import android.content.Context;
+
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
 
+import com.example.chatapp.R;
 import com.example.chatapp.models.ChatModel;
 import com.example.chatapp.models.Message;
 import com.example.chatapp.models.User;
@@ -23,12 +26,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JDBC {
 
-    final String DB_URL = "jdbc:postgresql://192.168.137.1:5432/testDb";
+    private String DB_URL;
     final String USER = "baseAdmin";            //TODO зашифровать и засунуть в SharedPreferences
     final String PASS = "postgresPassword";
 
@@ -36,7 +40,8 @@ public class JDBC {
 
     private Crypto cr = new Crypto();
 
-    public JDBC() {
+    public JDBC(String addr) {
+        DB_URL = "jdbc:postgresql://" + addr + ":5432/testDb";
 
     }
 
@@ -279,12 +284,11 @@ public class JDBC {
 
     public void readMessages(int chatId, String usUid) {
         Runnable taskRead = () -> {
-            String decryption = null;
+            String decryption = null;                       //Получение сообщений только по чату
             String getQuery = "select * from messages " +
                     "left join" +
                     "(select login, user_uid from users ) logs on " +
-                    "messages.sender = logs.user_uid where (messages.sender = '" + usUid + "' " +
-                    "OR messages.receiver = '" + usUid + "' OR receiver='all') AND chat_id = "+
+                    "messages.sender = logs.user_uid where chat_id = "+
                     chatId +";";
                     //"select * from messages where (sender = '" + usUid +
                     //"' OR receiver = '" + usUid + "' OR receiver='all') AND chat_id = " + chatId;
@@ -309,6 +313,7 @@ public class JDBC {
                             rs.getBoolean("is_seen"),
                             rs.getString("login")));
                 }
+                messageList.sort(Comparator.comparing(Message::getDateCreate));
                 callBackReadMessages.readMsg(messageList);
             } catch (SQLException e) {
                 printSQLException(e);

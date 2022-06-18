@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ChatApp</string>
+    <string name="app_name">ConferenceChat</string>
     <string name="title_activity_main">MainActivity</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -122,6 +122,9 @@
     <string name="us_email">USER_EMAIL</string>
     <string name="us_name">USER_NAME</string>
     <string name="us_pass">USER_PASS</string>
+
+    <string name="ip_address">192.168.50.48</string>
+
     <string name="title_activity_user_profile">UserProfileActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
 

@@ -9,13 +9,15 @@
     android:background="@drawable/back_border"
     android:focusable="true"
     android:clickable="true"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:foreground="?android:attr/selectableItemBackground"
+    android:padding="10dp">
 
     <ImageView
         android:id="@+id/userImage"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@color/black_overlay"/>
+        android:scaleType="centerCrop"
+        android:background="@drawable/circle"/>
     <TextView
         android:id="@+id/userName"
         android:layout_width="wrap_content"

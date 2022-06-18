@@ -13,6 +13,7 @@
             android:id="@+id/changePhotoProfile"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:scaleType="centerCrop"
             android:background="@drawable/circle"/>
         <TextView
             android:id="@+id/settingsUserName"

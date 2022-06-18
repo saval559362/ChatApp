@@ -20,7 +20,7 @@ public class ChangeNameActivity extends AppCompatActivity implements JDBC.CallBa
     private Button buttEndChangeName;
     private TextView currentUserName;
 
-    private JDBC changeControl = new JDBC();
+    private JDBC changeControl = new JDBC(getString(R.string.ip_address));
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

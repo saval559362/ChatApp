@@ -8,6 +8,7 @@
         android:id="@+id/userImageToolbar"
         android:layout_width="30dp"
         android:layout_height="30dp"
+        android:scaleType="centerCrop"
         android:background="@drawable/circle"
         android:layout_centerVertical="true"/>
     <TextView

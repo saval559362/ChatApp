@@ -1,20 +1,27 @@
 package com.example.chatapp.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chatapp.models.User;
+import com.example.chatapp.tools.FileControl;
 import com.example.chatapp.tools.JDBC;
 import com.example.chatapp.R;
 import com.example.chatapp.models.Message;
 
+import java.io.File;
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
@@ -25,12 +32,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private int MSG_TYPE_LEFT_GROUP = 2;
 
     private String usUid;
+    private JDBC msgControl;
+    private Context context;
 
-    private JDBC msgControl = new JDBC();
-
-    public MessageAdapter(List<Message> messageList, String usUid){
+    public MessageAdapter(Context context,String addr, List<Message> messageList, String usUid){
+        msgControl = new JDBC(addr);
         msgs = messageList;
         this.usUid = usUid;
+        this.context = context;
+
     }
 
     @NonNull
@@ -59,10 +69,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
         if(position == msgs.size() - 1 && getItemViewType(position) == MSG_TYPE_RIGHT){
             if(msg.getIsseen()){
-                holder.txtSeen.setText("Seen");
+                holder.txtSeen.setText("Просмотрено");
             }
             else{
-                holder.txtSeen.setText("Delivered");
+                holder.txtSeen.setText("Доставлено");
             }
         }
         else {
@@ -91,11 +101,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     public class MessageViewHolder extends RecyclerView.ViewHolder{
 
-        public View avatar;
+        public ImageView avatar;
         public RelativeLayout root;
         public TextView usName;
         public TextView usMsg;
         public TextView txtSeen;
+        private FileControl fc = new FileControl();
         //public CardView cView;
 
         public MessageViewHolder(View itemView) {
@@ -115,8 +126,24 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
             if (msg.getReceiver().equals("all") && getItemViewType() == MSG_TYPE_LEFT_GROUP) {
                 usName.setText(msg.getSenderName());
+
+                if (fc.getUserFile(msg.getSender()) != null) {
+                    RoundedBitmapDrawable roundImage;
+                    roundImage = getRoundImage(fc.getUserFile(msg.getSender()).getPath());
+                    avatar.setImageDrawable(roundImage);
+                }
+
             }
 
+        }
+
+        private RoundedBitmapDrawable getRoundImage(String filePath){
+            Bitmap batmapBitmap = BitmapFactory.decodeFile(filePath);
+            RoundedBitmapDrawable circularBitmapDrawable =
+                    RoundedBitmapDrawableFactory.create(context.getResources(), batmapBitmap);
+            circularBitmapDrawable.setCircular(true);
+
+            return circularBitmapDrawable;
         }
     }
 }
